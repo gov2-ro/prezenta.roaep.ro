@@ -1,7 +1,9 @@
 data/*
 _obsolete/*
 *_obsolete/*
-* (Copy*
+*(Copy*
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
