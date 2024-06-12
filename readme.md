@@ -22,3 +22,5 @@ consolidated:
 - data/precinct_data-<hh>.csv
 - data/county_data-<hh>.csv
 
+
+![dl data](assets/dl-prezenta.aep.ro.gif)
