@@ -2,7 +2,9 @@ data/*
 _obsolete/*
 *_obsolete/*
 *(Copy*
-
+!data/siruta-cod_jud.csv
+!data/merged_PVs-CL.csv
+!data/merged_PVs-P.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
