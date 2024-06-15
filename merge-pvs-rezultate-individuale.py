@@ -2,13 +2,25 @@ import pandas as pd
 import glob
 import json
 
+# Specify the columns to keep in the final DataFrame
+columns_to_keep = [
+    "precinct_county_nce", "precinct_county_name", "precinct_name", "precinct_nr", 
+    "uat_name", "uat_siruta", "report_version", "report_stage_code", 
+    "report_type_scope_code", "report_type_category_code", "report_type_code", 
+    "created_at", "a", "a1", "a2", "a3", "a4", "b", "b1", "b2", "b3", "b4", 
+    "c", "d", "e", "f", "candidates_count", "1st_place_name", "1st_place_count", 
+    "2nd_place_name", "2nd_place_count", "3rd_place_name", "3rd_place_count", 
+    "others_names", "others_results", "full_results_json"
+]
+
 def process_csv(file_path):
     df = pd.read_csv(file_path)
     result = []
 
     for _, row in df.iterrows():
         row_data = row[:35].to_dict()
-        candidate_cols = row.index[35:]
+        
+        candidate_cols = [col for col in row.index if '-voturi' in col]
         
         candidates = {}
         for col in candidate_cols:
@@ -28,20 +40,20 @@ def process_csv(file_path):
         row_data["3rd_place_name"] = top_3[2][0] if len(top_3) > 2 else None
         row_data["3rd_place_count"] = top_3[2][1] if len(top_3) > 2 else None
         row_data["others_names"] = ";".join([name for name, _ in others])
-        row_data["remaining_votes"] = sum([votes for _, votes in others])
+        row_data["others_results"] = sum([votes for _, votes in others])
         row_data["full_results_json"] = json.dumps(sorted_candidates)
 
         result.append(row_data)
     
-    return pd.DataFrame(result)
+    return pd.DataFrame(result, columns=columns_to_keep)
 
 # Load all CSV files
 csv_files = glob.glob('data/pvs/p-sample/*.csv')
 
-# Process and concatenate all CSV files
+# Process each CSV individually and concatenate the results
 processed_dfs = [process_csv(file) for file in csv_files]
 final_df = pd.concat(processed_dfs, ignore_index=True)
 
 # Save the results to CSV and Excel
-final_df.to_csv('data/concatenated_results.csv', index=False)
-final_df.to_excel('data/concatenated_results.xlsx', index=False)
+final_df.to_csv('data/concatenated_results_filtered.csv', index=False)
+final_df.to_excel('data/concatenated_results_filtered.xlsx', index=False)
