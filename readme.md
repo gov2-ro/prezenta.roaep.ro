@@ -27,4 +27,6 @@ Rezultate (procese verbale)
     - jsons-euro
     - siruta-cod_jud.csv
 
+![voturi nule](assets/chart-v-nule.png)
+![pivot 1](assets/pivot-p1.png)
 ![dl data](assets/dl-prezenta.aep.ro.gif)
