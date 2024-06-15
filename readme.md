@@ -14,8 +14,8 @@ Prezență vot
 
 Rezultate (procese verbale)
 - dl-pvs.py
-- merge-pvs-aggregate.py
-- merge-pvs-rezultate-individuale.py (WIP)
+- merge-pvs-aggregate.py – ignoră rezultatele / voturile individuale
+- merge-pvs-rezultate.py
 
 
 ### Data
