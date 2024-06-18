@@ -1,11 +1,11 @@
 data_root = 'data/'
 csv_folder = data_root + 'pvs/p/'
-output_csv = data_root + 'pvs-p.csv'
-output_xlsx = data_root + 'pvs-p.xlsx'
+output_csv = data_root + 'pvs-p2.csv'
+output_xlsx = data_root + 'pvs-p2.xlsx'
 
-csv_folder = data_root + 'pvs/cl/'
-output_csv = data_root + 'pvs-cl.csv'
-output_xlsx = data_root + 'pvs-cl.xlsx'
+# csv_folder = data_root + 'pvs/cl/'
+# output_csv = data_root + 'pvs-cl.csv'
+# output_xlsx = data_root + 'pvs-cl.xlsx'
 
 columns_to_keep = ["precinct_county_nce", "precinct_county_name", "precinct_name", "precinct_nr", "uat_name", "uat_siruta", "report_version", "report_stage_code", "report_type_scope_code", "report_type_category_code", "report_type_code", "created_at", "a", "a1", "a2", "a3", "a4", "b", "b1", "b2", "b3", "b4", "c", "d", "e", "f", "candidates_count", "1st_place_name", "1st_place_count", "2nd_place_name", "2nd_place_count", "3rd_place_name", "3rd_place_count", "others_names", "others_results", "full_results_json"]
 
