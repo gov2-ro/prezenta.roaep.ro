@@ -19,7 +19,7 @@ Rezultate (procese verbale)
 
 ----
 
-$ python dl-pvs.py --functie <functie> --pv-type <pv-type> --uat <uat> --alegeri <alegeri> 
+$ python dl-pvs.py --alegeri locale --functie p --pv-type final --uat cnty  
 
 - functie: _p*, cl, cj, pcj, eup_
 - pv-type: _temp, part, final*_ 
