@@ -17,6 +17,17 @@ Rezultate (procese verbale)
 - merge-pvs-aggregate.py – ignoră rezultatele / voturile individuale
 - merge-pvs-rezultate.py
 
+----
+
+$ python dl-pvs.py --functie <functie> --pv-type <pv-type> --uat <uat> --alegeri <alegeri> 
+
+- functie: _p*, cl, cj, pcj, eup_
+- pv-type: _temp, part, final*_ 
+- uat: _uat, cnty*, cntry_ 
+- alegeri: _locale*, europarlamentare_ 
+
+\* default values
+
 ### Data
 - data
     - analize/Alegeri locale24 - PVs x Prezență.xlsx ([gSheet](https://docs.google.com/spreadsheets/d/1S4K92YJPrIUTOYLAEWafUJvKp04XojPg)) 
