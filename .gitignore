@@ -6,6 +6,7 @@ _obsolete/*
 !data/merged_PVs-CL.csv
 !data/merged_PVs-P.csv
 !data/judete-siruta.csv
+.vscode/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
