@@ -14,7 +14,7 @@ functie_alesi='p'
 pv_type='final'
 
 # uat_type='uat'
-uat_type='cnty'
+uat_type='judet'
 # uat_type='cntry'
 
 # data_scrutin='27092020'    # locale tur 1
@@ -22,7 +22,7 @@ uat_type='cnty'
 # data_scrutin='27062021'    # locale parțiale
 data_scrutin='09062024'      # euro + locale
 
-data_root = "data/" + data_scrutin + '/'
+data_root = "data/" + data_scrutin + '-' + tip_alegeri + '/'
 
 uatx={
     # 'sectie': 'sv',
@@ -31,12 +31,12 @@ uatx={
 }
 
 csvs={
-    'cnty': 'judete-siruta.csv',
-    'uat': 'siruta-cod_jud.csv'
+    'cnty': 'judete.csv',
+    'uat': 'uats-siruta.csv'
 }
 csv_cols_jud={
-    'cnty': 'Cod',
-    'uat': 'Cod'
+    'cnty': 'Cod judet',
+    'uat': 'Cod judet'
 }
 
 import pandas as pd
@@ -56,7 +56,7 @@ args = parser.parse_args()
 
 functie_alesi = args.functie
 pv_type = args.pv_type
-data_scrutin = args.data_scrutin
+data_scrutin = args.data
 
 uat_type = uatx[args.uat] if args.uat in uatx else uatx[uat_type]
 

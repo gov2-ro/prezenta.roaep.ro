@@ -5,6 +5,7 @@ tip_alegeri='locale'
 # data_scrutin='11102020'    # locale tur 2 # FIXME: not working?!
 # data_scrutin='27062021'    # locale parțiale
 data_scrutin='09062024'      # euro + locale
+
 timerange_start=19
 timerange_end=22
 
@@ -12,11 +13,10 @@ timerange_end=22
 # TODO: accomodate multi-days range (ex locale 21)
 
 
-
-
 import os, requests, argparse
 # import pandas as pd
 from datetime import datetime
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Download prezenta vot (json& & csv)')
 parser.add_argument('--data', type=str, help='Dată alegeri (ddmmyyy)', default=data_scrutin)
@@ -32,10 +32,9 @@ timerange_start = int(args.t_start)
 timerange_end = int(args.t_end) + 1
 
 judete = ['ab','ag','ar','b','bc','bh','bn','br','bt','bv','bz','cj','cl','cs','ct','cv','db','dj','gj','gl','gr','hd','hr','if','il','is','mh','mm','ms','nt','ot','ph','sb','sj','sm','sv','tl','tm','tr','vl','vn','vs']
-judete = [] # only download csvs 
+# judete = [] # only download csvs 
 
-
-data_root='data/' + data_scrutin + '/prezenta/' 
+data_root = "data/" + data_scrutin + '-' + tip_alegeri + '/prezenta/'
 
 destination_dir = data_root 
 
@@ -63,34 +62,31 @@ def download_json(url, filepath):
         # print(f"Fișierul {filename} deja există în directorul de destinație.")
         return 2
 
+total = len(judete) * len(timerange) + len(timerange)
 
-for judet in judete:
+for judet in tqdm(judete, total=total):
+    tqdm.write(f"-- județ: {judet}")
     for ora in timerange:
-        # https://prezenta.roaep.ro/locale09062024//data/csv/simpv/presence_2024-06-09_22-00.csv
-        # https://prezenta.roaep.ro/locale09062024/data/json/simpv/presence/activity_ag.json
-        # https://prezenta.roaep.ro/locale09062024/data/json/simpv/presence/presence_ag_2024-06-09_22-00.json
         url = f"https://prezenta.roaep.ro/{tip_alegeri}{data_scrutin}/data/json/simpv/presence/presence_{judet}_{ymd_date}_{ora}-00.json"
         filename = f"prezenta_{judet}_{ymd_date}_{ora}-00.json"
         filepath = os.path.join(destination_dir + 'jsons/', filename)
         try:
             dl = download_json(url, filepath)
             if dl == 1:
-                print(f"Fișierul {filename} a fost descărcat și salvat.")
+                tqdm.write(f"- d {filename} [downloaded]")
             elif dl == 0:
-                print(f"Nu s-a putut descărca fișierul de la URL-ul {url}")
+                tqdm.write(f"Nu s-a putut descărca fișierul de la URL-ul {url}")
             elif dl == 2:
-                print(f"Fișierul {filename} deja există în directorul de destinație.")
+                tqdm.write(f"- c {filename} [cached]")
         except Exception as e:
-            print(f"-E61 Error: {e}")
+            tqdm.write(f"-E61 Error: {e}")
             # continue
             exit(1)
             
         
 for ora in timerange:
     url_cntry = f"https://prezenta.roaep.ro/{tip_alegeri}{data_scrutin}/data/csv/simpv/presence_{ymd_date}_{ora}-00.csv"
-    # https://prezenta.roaep.ro/locale09062024/data/csv/simpv/presence_2024-06-09_22-00.csv
-    # print(url_cntry)
-    # exit()
+    
     filename_cntry = f"prezenta_{ymd_date}_{ora}-00.csv"
     filepath_cntry = os.path.join(destination_dir + 'csvs/', filename_cntry)
     try:

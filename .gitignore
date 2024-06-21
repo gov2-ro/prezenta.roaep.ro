@@ -1,6 +1,7 @@
 data/*
 _obsolete/*
-*_obsolete/*
+*_obsolete*
+*_obsolete*/*
 *(Copy*
 !data/siruta-cod_jud.csv
 !data/merged_PVs-CL.csv

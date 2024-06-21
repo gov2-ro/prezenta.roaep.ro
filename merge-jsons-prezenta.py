@@ -1,13 +1,18 @@
-import json
-import pandas as pd
-import os
-import re
+tip_alegeri='locale'
+data_scrutin='09062024'      # euro + locale
+data_root = "data/" + data_scrutin + '-' + tip_alegeri + '/prezenta/'
 
-# Directory containing JSON files
-json_dir = 'data/jsons-euro/'
-output_xlsx = 'data/consolidated-euro.xlsx'
-json_dir = 'data/jsons-locale/'
-output_xlsx = 'data/consolidated-locale.xlsx'
+json_dir = data_root + 'jsons/' 
+
+output_xlsx = data_root + 'consolidated.xlsx'
+output_csv = data_root + 'consolidated.csv'
+
+
+# TODO: script args
+
+import json, os, re
+import pandas as pd
+
 
 def flatten_json(json_obj, parent_key='', sep='.'):
     items = []
@@ -20,6 +25,7 @@ def flatten_json(json_obj, parent_key='', sep='.'):
     return dict(items)
 
 # Function to extract xcounty and xhour from filename
+# TODO: do we still need this?
 def extract_county_hour(filename):
     match = re.match(r'presence_([a-z]+)_[\d-]+_(\d+)-00.json', filename)
     if match:

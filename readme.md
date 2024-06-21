@@ -9,7 +9,8 @@ Downloadează (și agregă) date despre rezultate și prezență la vot publicat
 
 Prezență vot
 - dl-prezenta.py
-- merge-prezenta.py
+- merge-jsons-prezenta.py
+- merge-csvs-prezenta.py #TODO: 
 
 Rezultate (procese verbale)
 - dl-pvs.py
@@ -39,15 +40,33 @@ $ python **`dl-pvs.py`**`--data `_`09062024`_` --alegeri `_`locale`_` --pv-type 
 
 ----
 
-### Data
-- data
-    - analize/Alegeri locale24 - PVs x Prezență.xlsx ([gSheet](https://docs.google.com/spreadsheets/d/1S4K92YJPrIUTOYLAEWafUJvKp04XojPg)) 
+### Output
+
+- \<data_scrutin\>-\<tip_alegeri\>/
+    - prezenta/
+        - csvs/
+        - jsons/
+        - consolidat/
     - pvs
-        - cl
-        - p
-    - jsons-locale
-    - jsons-euro
-    - siruta-cod_jud.csv
+        - \<functie\>/\<tip_uat\>/
+            - consolidat/
+- judete.csv
+- uat-siruta.csv
+
+---
+
+## Roadmap
+
+-[x] dl prezență
+-[x] concatenate prezență
+-[x] dl PVs
+-[x] concatenate PVs
+-[x] add params
+-[ ] consolidate to sqlite db
+-[ ] analytics
+-[ ] election day version - main executable, get timerange from site
+-[ ] UI / dashboards
+
 
 ![voturi nule](assets/chart-v-nule.png)
 ![pivot 1](assets/pivot-p1.png)
