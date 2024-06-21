@@ -8,9 +8,8 @@ Downloadează (și agregă) date despre rezultate și prezență la vot publicat
 ## Scripts
 
 Prezență vot
-- generate-urls-prezenta.py
-- dl-jsons-prezenta.py
-- consolidate-prezenta.py
+- dl-prezenta.py
+- merge-prezenta.py
 
 Rezultate (procese verbale)
 - dl-pvs.py
@@ -19,7 +18,16 @@ Rezultate (procese verbale)
 
 ----
 
-$ python `dl-pvs.py --data 09062024 --alegeri locale --pv-type final --uat cnty --functie p`  
+$ python **`dl-prezenta.py`**` --data `_`09062024`_` --alegeri `_`locale`_` --t_start `_`19`_` --t_end `_`22`_  
+
+- data: _ddmmyyyy_ (27092020, 11102020, 27062021, 09062024)
+- alegeri: _locale, europarlamentare_ 
+- t_start: int (8 - 22)  
+- t_end: int (8 - 22)
+
+----
+
+$ python **`dl-pvs.py`**`--data `_`09062024`_` --alegeri `_`locale`_` --pv-type `_`final`_` --uat `_`cnty`_` --functie `_`p`_  
 
 - data: _ddmmyyyy_
 - alegeri: _locale*, europarlamentare_ 

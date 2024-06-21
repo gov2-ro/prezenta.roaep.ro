@@ -11,13 +11,25 @@ timerange_end=22
 # TODO: fetch existing timeslots from website dropdown, or check for latest timestamp?
 # TODO: accomodate multi-days range (ex locale 21)
 
-timerange = ['{:02}'.format(i) for i in range(timerange_start, timerange_end)]
-timerange = ['07', '09', '11', '13', '15', '17', '19', '21', '22']
 
 
-import os, requests
+
+import os, requests, argparse
 # import pandas as pd
 from datetime import datetime
+
+parser = argparse.ArgumentParser(description='Download prezenta vot (json& & csv)')
+parser.add_argument('--data', type=str, help='Dată alegeri (ddmmyyy)', default=data_scrutin)
+parser.add_argument('--alegeri', type=str, help='Tip alegeri (e.g., locale, europarlamentare)', default=tip_alegeri)
+parser.add_argument('--t_start', type=str, help='Timp start (7 - 23)', default=timerange_start)
+parser.add_argument('--t_end', type=str, help='Timp end (7 - 23)', default=timerange_end)
+
+args = parser.parse_args()
+
+data_scrutin = args.data
+tip_alegeri = args.alegeri
+timerange_start = int(args.t_start)
+timerange_end = int(args.t_end) + 1
 
 judete = ['ab','ag','ar','b','bc','bh','bn','br','bt','bv','bz','cj','cl','cs','ct','cv','db','dj','gj','gl','gr','hd','hr','if','il','is','mh','mm','ms','nt','ot','ph','sb','sj','sm','sv','tl','tm','tr','vl','vn','vs']
 judete = [] # only download csvs 
@@ -31,6 +43,9 @@ os.makedirs(destination_dir + 'jsons/', exist_ok=True)
 os.makedirs(destination_dir + 'csvs/', exist_ok=True)
 
 ymd_date = datetime.strptime(data_scrutin, '%d%m%Y').strftime('%Y-%m-%d')
+
+timerange = ['{:02}'.format(i) for i in range(timerange_start, timerange_end)]
+# timerange = ['07', '09', '11', '13', '15', '17', '19', '21', '22']
 
 def download_json(url, filepath):
     if not os.path.exists(filepath):

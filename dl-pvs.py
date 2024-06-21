@@ -45,7 +45,7 @@ from tqdm import tqdm
 
 base_url = "https://prezenta.roaep.ro/{}{}/data/csv/sicpv/pv_{}_{}_{}_{}.csv" 
 
-parser = argparse.ArgumentParser(description='Download PVs based on specified criteria.')
+parser = argparse.ArgumentParser(description='Download PVs')
 parser.add_argument('--functie', type=str, help='Function type (e.g., pcj)', default=functie_alesi)
 parser.add_argument('--pv-type', type=str, help='PV type (e.g., part)', default=pv_type)
 parser.add_argument('--uat', type=str, help='UAT type (e.g., cnty)', default=uat_type)
@@ -56,6 +56,7 @@ args = parser.parse_args()
 
 functie_alesi = args.functie
 pv_type = args.pv_type
+data_scrutin = args.data_scrutin
 
 uat_type = uatx[args.uat] if args.uat in uatx else uatx[uat_type]
 
