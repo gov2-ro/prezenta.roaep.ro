@@ -3,6 +3,7 @@ _obsolete/*
 *_obsolete*
 *_obsolete*/*
 *(Copy*
+!data/static/
 !data/static/*
 .vscode/*
 
