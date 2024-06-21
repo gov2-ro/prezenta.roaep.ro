@@ -17,9 +17,6 @@ pv_type='final'
 uat_type='judet'
 # uat_type='cntry'
 
-# data_scrutin='27092020'    # locale tur 1
-# data_scrutin='11102020'    # locale tur 2 # FIXME: not working?!
-# data_scrutin='27062021'    # locale parțiale
 data_scrutin='09062024'      # euro + locale
 
 data_root = "data/" + data_scrutin + '-' + tip_alegeri + '/'
@@ -97,4 +94,3 @@ try:
     print("Done! " + str(len(df)) + " files downloaded to: ", output_dir)
 except Exception as e:
     print(f"Error: {e}")
-

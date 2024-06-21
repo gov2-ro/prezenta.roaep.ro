@@ -1,13 +1,49 @@
-data_root = 'data/'
-csv_folder = data_root + 'pvs/p/'
-output_csv = data_root + 'pvs-p2.csv'
-output_xlsx = data_root + 'pvs-p2.xlsx'
+#  TODO: check if well formated csv
+# auto detect columns to keep?
+# -voturi
+# -mandate-faza-*
+
+tip_alegeri='locale'
+# tip_alegeri='europarlamentare'
+
+# diaspora="abroad"
+
+functie_alesi='p'
+# functie_alesi='cl'
+functie_alesi='cj'
+functie_alesi='pcj'
+# functie_alesi='eup'
+
+# pv_type='temp'
+# pv_type='part'
+pv_type='final'
+
+# uat_type='uat'
+uat_type='judet'
+# uat_type='tara'
+
+data_scrutin='09062024'      # euro + locale
+
+data_root = "data/" + data_scrutin + '-' + tip_alegeri + '/pvs/'
+
+uatx={
+    # 'sectie': 'sv',
+    'judet': 'cnty',
+    'tara': 'cntry',
+}
+
+csv_folder = data_root + functie_alesi + '/' + uatx[uat_type] + '/' + pv_type + '/'
+output_csv = data_root + 'merged-' + functie_alesi + '-' + uatx[uat_type] + '-' + pv_type + '.csv'
+output_xlsx = data_root + 'merged-' + functie_alesi + '-' + uatx[uat_type] + '-' + pv_type + '.xlsx'
+
 
 # csv_folder = data_root + 'pvs/cl/'
 # output_csv = data_root + 'pvs-cl.csv'
 # output_xlsx = data_root + 'pvs-cl.xlsx'
 
-columns_to_keep = ["precinct_county_nce", "precinct_county_name", "precinct_name", "precinct_nr", "uat_name", "uat_siruta", "report_version", "report_stage_code", "report_type_scope_code", "report_type_category_code", "report_type_code", "created_at", "a", "a1", "a2", "a3", "a4", "b", "b1", "b2", "b3", "b4", "c", "d", "e", "f", "candidates_count", "1st_place_name", "1st_place_count", "2nd_place_name", "2nd_place_count", "3rd_place_name", "3rd_place_count", "others_names", "others_results", "full_results_json"]
+# columns_to_keep = ["precinct_county_nce", "precinct_county_name", "precinct_name", "precinct_nr", "uat_name", "uat_siruta", "report_version", "report_stage_code", "report_type_scope_code", "report_type_category_code", "report_type_code", "created_at", "a", "a1", "a2", "a3", "a4", "b", "b1", "b2", "b3", "b4", "c", "d", "e", "f", "candidates_count", "1st_place_name", "1st_place_count", "2nd_place_name", "2nd_place_count", "3rd_place_name", "3rd_place_count", "others_names", "others_results", "full_results_json"]
+columns_to_keep = ["uat_name", "uat_siruta", "report_version", "report_stage_code", "report_type_scope_code", "report_type_category_code", "report_type_code", "created_at", "a", "a1", "a2", "a3", "a4", "b", "b1", "b2", "b3", "b4", "c", "d", "e", "f", "candidates_count", "1st_place_name", "1st_place_count", "2nd_place_name", "2nd_place_count", "3rd_place_name", "3rd_place_count", "others_names", "others_results", "full_results_json"]
+
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   
 
@@ -52,16 +88,24 @@ def process_csv(file_path):
 
 processed_dfs = []
 
-csv_files = glob.glob(csv_folder + '*.csv')
+try:
+    csv_files = glob.glob(csv_folder + '*.csv')
 
-for file in tqdm(csv_files, desc="Processing CSV files"):
-    processed_dfs.append(process_csv(file))
-tqdm.write("Start concatenating results...")
-final_df = pd.concat(processed_dfs, ignore_index=True)
-tqdm.write("Concatenating results... done")
-tqdm.write("Exporting results...")
+    for file in tqdm(csv_files, desc="Processing CSV files"):
+        #  TODO: check if well formated csv
+        try:
+            processed_dfs.append(process_csv(file))
+        except Exception as e:
+            tqdm.write(f"Error processing {file}: {e}")
+            continue
+    tqdm.write("Start concatenating results...")
+    final_df = pd.concat(processed_dfs, ignore_index=True)
+    tqdm.write("Concatenating results... done")
+    tqdm.write("Exporting results...")
 
-final_df.to_csv(output_csv, index=False)
-final_df.to_excel(output_xlsx, index=False)
+    # final_df.to_csv(output_csv, index=False)
+    final_df.to_excel(output_xlsx, index=False)
 
-tqdm.write(f"Done: CSV output saved to {output_csv}")
+    tqdm.write(f"Done: {output_xlsx} saved")
+except Exception as e:
+    print(f"Error: {e}")

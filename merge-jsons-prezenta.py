@@ -1,3 +1,5 @@
+# TODO: WIP
+
 tip_alegeri='locale'
 data_scrutin='09062024'      # euro + locale
 data_root = "data/" + data_scrutin + '-' + tip_alegeri + '/prezenta/'
