@@ -14,8 +14,7 @@ Downloadează (și agregă) date despre rezultate și prezență la vot publicat
 
 ### Rezultate (procese verbale)
 - `dl-pvs.py`
-- `merge-pvs-aggregate.py` – ignoră rezultatele / voturile individuale
-- `merge-pvs-rezultate.py`
+- `merge-pvs.py`
 
 ### SQLite
 - `xlsx2sqlite.py`
@@ -66,6 +65,7 @@ $ python **`dl-pvs.py`**` --data 09062024 --alegeri locale --pv-type final --uat
 - [x] concatenate prezență
 - [x] dl PVs
 - [x] concatenate PVs
+    - [ ] detect common columns
 - [x] add params
 - [ ] consolidate to sqlite db
     - [x] individuale
