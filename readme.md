@@ -17,6 +17,9 @@ Downloadează (și agregă) date despre rezultate și prezență la vot publicat
 - merge-pvs-aggregate.py – ignoră rezultatele / voturile individuale
 - merge-pvs-rezultate.py
 
+### SQLite
+- xlsx2sqlite.py
+
 ----
 
 $ python **`dl-prezenta.py`**` --data 09062024 --alegeri locale --t_start 19 --t_end 22`
@@ -40,7 +43,7 @@ $ python **`dl-pvs.py`**` --data 09062024 --alegeri locale --pv-type final --uat
 
 ----
 
-### Output
+### Data / Output
 
 - \<data_scrutin\>-\<tip_alegeri\>/
     - prezenta/
@@ -48,10 +51,12 @@ $ python **`dl-pvs.py`**` --data 09062024 --alegeri locale --pv-type final --uat
         - jsons/
         - consolidat/
     - pvs
-        - \<functie\>/\<tip_uat\>/
-            - consolidat/
-- judete.csv
-- uat-siruta.csv
+        - \<functie\>/\<tip_uat\>/\<tip_uat\>/*.csv
+        - merged-\<functie\>-\<tip_uat\>-\<tip_uat\>.xlsx
+        - merged-\<functie\>-\<tip_uat\>-\<tip_uat\>.db
+- static/
+    - judete.csv
+    - uat-siruta.csv
 
 ---
 
