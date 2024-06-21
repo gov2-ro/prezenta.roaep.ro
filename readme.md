@@ -8,17 +8,17 @@ Downloadează (și agregă) date despre rezultate și prezență la vot publicat
 ## Scripts
 
 ### Prezență vot
-- dl-prezenta.py
-- merge-jsons-prezenta.py
-- merge-csvs-prezenta.py #TODO: 
+- `dl-prezenta.py`
+- `merge-jsons-prezenta.py`
+- `merge-csvs-prezenta.py` #TODO: 
 
 ### Rezultate (procese verbale)
-- dl-pvs.py
-- merge-pvs-aggregate.py – ignoră rezultatele / voturile individuale
-- merge-pvs-rezultate.py
+- `dl-pvs.py`
+- `merge-pvs-aggregate.py` – ignoră rezultatele / voturile individuale
+- `merge-pvs-rezultate.py`
 
 ### SQLite
-- xlsx2sqlite.py
+- `xlsx2sqlite.py`
 
 ----
 
