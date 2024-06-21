@@ -19,12 +19,13 @@ Rezultate (procese verbale)
 
 ----
 
-$ python dl-pvs.py --alegeri locale --functie p --pv-type final --uat cnty  
+$ python `dl-pvs.py --data 09062024 --alegeri locale --pv-type final --uat cnty --functie p`  
 
-- functie: _p*, cl, cj, pcj, eup_
+- data: _ddmmyyyy_
+- alegeri: _locale*, europarlamentare_ 
 - pv-type: _temp, part, final*_ 
 - uat: _uat, cnty*, cntry_ 
-- alegeri: _locale*, europarlamentare_ 
+- functie: _p*, cl, cj, pcj, eup_
 
 \* default values
 
