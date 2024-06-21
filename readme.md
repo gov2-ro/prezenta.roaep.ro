@@ -7,19 +7,19 @@ Downloadează (și agregă) date despre rezultate și prezență la vot publicat
 
 ## Scripts
 
-Prezență vot
+### Prezență vot
 - dl-prezenta.py
 - merge-jsons-prezenta.py
 - merge-csvs-prezenta.py #TODO: 
 
-Rezultate (procese verbale)
+### Rezultate (procese verbale)
 - dl-pvs.py
 - merge-pvs-aggregate.py – ignoră rezultatele / voturile individuale
 - merge-pvs-rezultate.py
 
 ----
 
-$ python **`dl-prezenta.py`**` --data `_`09062024`_` --alegeri `_`locale`_` --t_start `_`19`_` --t_end `_`22`_  
+$ python **`dl-prezenta.py`**` --data 09062024 --alegeri locale --t_start 19 --t_end 22`
 
 - data: _ddmmyyyy_ (27092020, 11102020, 27062021, 09062024)
 - alegeri: _locale, europarlamentare_ 
@@ -28,7 +28,7 @@ $ python **`dl-prezenta.py`**` --data `_`09062024`_` --alegeri `_`locale`_` --t_
 
 ----
 
-$ python **`dl-pvs.py`**`--data `_`09062024`_` --alegeri `_`locale`_` --pv-type `_`final`_` --uat `_`cnty`_` --functie `_`p`_  
+$ python **`dl-pvs.py`**` --data 09062024 --alegeri locale --pv-type final --uat cnty --functie p`
 
 - data: _ddmmyyyy_
 - alegeri: _locale*, europarlamentare_ 
@@ -57,18 +57,19 @@ $ python **`dl-pvs.py`**`--data `_`09062024`_` --alegeri `_`locale`_` --pv-type 
 
 ## Roadmap
 
--[x] dl prezență
--[x] concatenate prezență
--[x] dl PVs
--[x] concatenate PVs
--[x] add params
--[ ] consolidate to sqlite db
--[ ] analytics
--[ ] election day version - main executable, get timerange from site
--[ ] UI / dashboards
+- [x] dl prezență
+- [x] concatenate prezență
+- [x] dl PVs
+- [x] concatenate PVs
+- [x] add params
+- [ ] consolidate to sqlite db
+- [ ] analytics
+- [ ] election day version - main executable, get timerange from site
+- [ ] UI / dashboards
 
 
-![voturi nule](assets/chart-v-nule.png)
-![pivot 1](assets/pivot-p1.png)
-![detaliu 1](assets/detaliu-xlsx.png)
-![dl data](assets/dl-prezenta.aep.ro.gif)
+---
+
+![dl data](data/static/assets/dl-pvs.gif)
+
+![voturi nule](data/static/assets/chart-v-nule.png)

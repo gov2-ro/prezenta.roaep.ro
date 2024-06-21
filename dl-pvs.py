@@ -31,8 +31,8 @@ uatx={
 }
 
 csvs={
-    'cnty': 'judete.csv',
-    'uat': 'uats-siruta.csv'
+    'cnty': 'static/judete.csv',
+    'uat': 'static/uats-siruta.csv'
 }
 csv_cols_jud={
     'cnty': 'Cod judet',
