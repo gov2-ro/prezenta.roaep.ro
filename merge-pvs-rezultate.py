@@ -1,56 +1,25 @@
-#  TODO: check if well formated csv
 # auto detect columns to keep?
 # -voturi
 # -mandate-faza-*
 
-tip_alegeri='locale'
-# tip_alegeri='europarlamentare'
-
+tip_alegeri   = 'locale'
 # diaspora="abroad"
+functie_alesi = 'p'
+pv_type       = 'final'
+uat_type      = 'judet'
+data_scrutin  = '09062024'
 
-functie_alesi='p'
-# functie_alesi='cl'
-functie_alesi='cj'
-functie_alesi='pcj'
-# functie_alesi='eup'
+uatx          = {'sectie': 'sv', 'judet': 'cnty', 'tara': 'cntry'}
 
-# pv_type='temp'
-# pv_type='part'
-pv_type='final'
-
-# uat_type='uat'
-uat_type='judet'
-# uat_type='tara'
-
-data_scrutin='09062024'      # euro + locale
-
-data_root = "data/" + data_scrutin + '-' + tip_alegeri + '/pvs/'
-
-uatx={
-    # 'sectie': 'sv',
-    'judet': 'cnty',
-    'tara': 'cntry',
-}
-
-csv_folder = data_root + functie_alesi + '/' + uatx[uat_type] + '/' + pv_type + '/'
-output_csv = data_root + 'merged-' + functie_alesi + '-' + uatx[uat_type] + '-' + pv_type + '.csv'
-output_xlsx = data_root + 'merged-' + functie_alesi + '-' + uatx[uat_type] + '-' + pv_type + '.xlsx'
-
-
-# csv_folder = data_root + 'pvs/cl/'
-# output_csv = data_root + 'pvs-cl.csv'
-# output_xlsx = data_root + 'pvs-cl.xlsx'
 
 # columns_to_keep = ["precinct_county_nce", "precinct_county_name", "precinct_name", "precinct_nr", "uat_name", "uat_siruta", "report_version", "report_stage_code", "report_type_scope_code", "report_type_category_code", "report_type_code", "created_at", "a", "a1", "a2", "a3", "a4", "b", "b1", "b2", "b3", "b4", "c", "d", "e", "f", "candidates_count", "1st_place_name", "1st_place_count", "2nd_place_name", "2nd_place_count", "3rd_place_name", "3rd_place_count", "others_names", "others_results", "full_results_json"]
-columns_to_keep = ["uat_name", "uat_siruta", "report_version", "report_stage_code", "report_type_scope_code", "report_type_category_code", "report_type_code", "created_at", "a", "a1", "a2", "a3", "a4", "b", "b1", "b2", "b3", "b4", "c", "d", "e", "f", "candidates_count", "1st_place_name", "1st_place_count", "2nd_place_name", "2nd_place_count", "3rd_place_name", "3rd_place_count", "others_names", "others_results", "full_results_json"]
-
+columns_to_keep = ["county_nce", "county_name", "uat_name", "uat_siruta", "report_version", "report_stage_code", "report_type_scope_code", "report_type_category_code", "report_type_code", "created_at", "a", "a1", "a2", "a3", "a4", "b", "b1", "b2", "b3", "b4", "c", "d", "e", "f", "candidates_count", "1st_place_name", "1st_place_count", "2nd_place_name", "2nd_place_count", "3rd_place_name", "3rd_place_count", "others_names", "others_results", "full_results_json"]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   
 
-import pandas as pd
-import glob
-import json
+import glob, json, argparse
 from tqdm import tqdm
+import pandas as pd
 
 def process_csv(file_path):
     df = pd.read_csv(file_path)
@@ -88,11 +57,29 @@ def process_csv(file_path):
 
 processed_dfs = []
 
+parser = argparse.ArgumentParser(description='Merge PVs')
+parser.add_argument('--functie', type=str, help='Function type (e.g., pcj)', default=functie_alesi)
+parser.add_argument('--pv-type', type=str, help='PV type (e.g., part)', default=pv_type)
+parser.add_argument('--uat', type=str, help='UAT type (e.g., cnty)', default=uat_type)
+parser.add_argument('--data', type=str, help='Dată alegeri (ddmmyyy)', default=data_scrutin)
+parser.add_argument('--alegeri', type=str, help='Tip alegeri (e.g., locale, europarlamentare)', default=tip_alegeri)
+args = parser.parse_args()
+
+functie_alesi = args.functie
+pv_type = args.pv_type
+data_scrutin = args.data
+
+uat_type = uatx[args.uat] if args.uat in uatx else uatx[uat_type]
+
+data_root = "data/" + data_scrutin + '-' + tip_alegeri + '/pvs/'
+csv_folder = data_root + functie_alesi + '/' + uat_type + '/' + pv_type + '/'
+output_csv = data_root + 'merged-' + functie_alesi + '-' + uat_type + '-' + pv_type + '.csv'
+output_xlsx = data_root + 'merged-' + functie_alesi + '-' + uat_type + '-' + pv_type + '.xlsx'
+
 try:
     csv_files = glob.glob(csv_folder + '*.csv')
 
     for file in tqdm(csv_files, desc="Processing CSV files"):
-        #  TODO: check if well formated csv
         try:
             processed_dfs.append(process_csv(file))
         except Exception as e:
@@ -103,8 +90,7 @@ try:
     tqdm.write("Concatenating results... done")
     tqdm.write("Exporting results...")
 
-    # final_df.to_csv(output_csv, index=False)
-    final_df.to_excel(output_xlsx, index=False)
+    final_df.to_excel(output_xlsx, index=False, sheet_name='PVs-' + functie_alesi.upper(), freeze_panes=(1,1))
 
     tqdm.write(f"Done: {output_xlsx} saved")
 except Exception as e:

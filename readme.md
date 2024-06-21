@@ -68,10 +68,12 @@ $ python **`dl-pvs.py`**` --data 09062024 --alegeri locale --pv-type final --uat
 - [x] concatenate PVs
 - [x] add params
 - [ ] consolidate to sqlite db
+    - [x] individuale
+    - [ ] master db?
+    - [ ] public Datasette?
 - [ ] analytics
-- [ ] election day version - main executable, get timerange from site
 - [ ] UI / dashboards
-
+- [ ] election day version - main executable, get timerange from site
 
 ---
 
