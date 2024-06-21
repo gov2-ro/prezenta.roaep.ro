@@ -15,6 +15,7 @@ Downloadează (și agregă) date despre rezultate și prezență la vot publicat
 ### Rezultate (procese verbale)
 - `dl-pvs.py`
 - `merge-pvs.py`
+- `run_merge_scripts.sh` - orchestrates _merge-pvs.py_ with different parameters
 
 ### SQLite
 - `xlsx2sqlite.py`

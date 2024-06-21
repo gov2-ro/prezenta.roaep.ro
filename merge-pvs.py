@@ -92,7 +92,7 @@ try:
     tqdm.write("Concatenating results... done")
     tqdm.write("Exporting results...")
 
-    final_df.to_excel(output_xlsx, index=False, sheet_name='PVs-' + functie_alesi.upper(), freeze_panes=(1,1))
+    final_df.to_excel(output_xlsx, index=False, sheet_name='PVs-' + functie_alesi.upper(), freeze_panes=(1,0))
 
     tqdm.write(f"Done: {output_xlsx} saved")
 except Exception as e:
