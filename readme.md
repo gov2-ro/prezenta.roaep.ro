@@ -29,6 +29,8 @@ $ python `dl-pvs.py --data 09062024 --alegeri locale --pv-type final --uat cnty 
 
 \* default values
 
+----
+
 ### Data
 - data
     - analize/Alegeri locale24 - PVs x Prezență.xlsx ([gSheet](https://docs.google.com/spreadsheets/d/1S4K92YJPrIUTOYLAEWafUJvKp04XojPg)) 
