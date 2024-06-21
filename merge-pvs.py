@@ -20,8 +20,9 @@ import pandas as pd
 def process_csv(file_path):
     df = pd.read_csv(file_path)
     columns_to_exclude = ['-voturi', '-mandate']
-    columns_to_keep = [col for col in df.columns if not any(col.endswith(exclude) for exclude in columns_to_exclude)]
-    
+    # columns_to_keep = [col for col in df.columns if not any(col.endswith(exclude) for exclude in columns_to_exclude)]
+    columns_to_keep = [col for col in df.columns if not any(col.endswith(exclude) or '-mandate' in col for exclude in columns_to_exclude)]
+
     result = []
 
     for _, row in df.iterrows():
