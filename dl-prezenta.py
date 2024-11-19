@@ -8,14 +8,49 @@
 
 """
 
+alegeri = '2020-parl'
+
 data_root = "data/"
 index_alegeti = 'data/static/prezenta-alegeri-roaep.csv'
-alegeri = '2024-euparl'
-
 overwrite = False
 
-# logfile = data_root + alegeri + '/download.log'
+judete = ['ab','ag','ar','b','bc','bh','bn','br','bt','bv','bz','cj','cl','cs','ct','cv','db','dj','gj','gl','gr','hd','hr','if','il','is','mh','mm','ms','nt','ot','ph','sb','sj','sm','sv','tl','tm','tr','vl','vn','vs','sr'] # 'sr' for strainatate
+# judete = [] # only download csvs 
 
+
+""" 
+['2024-local-3', '2024-local-2', '2024-euparl', '2024-local', '2024-refloc', '2022-refloc', '2021-refloc-4', '2021-refloc-3', '2021-refloc-2', '2021-refloc-1', '2021-local-2', '2021-local-1', '2020-parl', '2019-prez-1', '2019-prez-1', '2020-local-2', '2020-local', '2019-ref', '2019-euparl', '2016-parl']
+"""
+
+domain_pattern = {
+'prezenta.roaep.ro':  {'json': '/data/json/simpv/presence/presence_','csv': '/data/csv/simpv/presence_'},
+'prezenta.bec.ro': {'json': '/data/presence/json/presence_','csv': '/data/presence/csv/presence_'}}
+
+scrutin_pattern = {
+'locale07072024':{          'id':'2024-local-3', 'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'locale23062024':{          'id':'2024-local-2', 'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'europarlamentare09062024':{'id':'2024-euparl',  'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'locale09062024':{          'id':'2024-local',   'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'referendum26052024':{      'id':'2024-refloc',  'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'referendum19062022':{      'id':'2022-refloc',  'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'referendum26092021_3':{    'id':'2021-refloc-4','json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'referendum26092021_2':{    'id':'2021-refloc-3','json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'referendum26092021_1':{    'id':'2021-refloc-2','json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'referendum15082021':{      'id':'2021-refloc-1','json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'locale27062021':{          'id':'2021-local-2' ,'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'locale24012021':{          'id':'2021-local-1' ,'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'parlamentare06122020':{    'id':'2020-parl',    'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'prezidentiale24112019':{   'id':'2019-prez-2',  'json':'/data/presence/json/presence_',       'csv':'/data/presence/csv/presence_', 'platform': 'prezenta.bec.ro'},
+'prezidentiale10112019':{   'id':'2019-prez-1',  'json':'/data/presence/json/presence_',       'csv':'/data/presence/csv/presence_', 'platform': 'prezenta.bec.ro'},
+'locale11102020':{          'id':'2020-local-2', 'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'locale27092020':{          'id':'2020-local',   'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
+'referendum26052019':{      'id':'2019-ref',     'json':'/data/presence/json/presence_',       'csv':'/data/presence/csv/presence_', 'platform': 'prezenta.bec.ro'},
+'europarlamentare26052019':{'id':'2019-euparl',  'json':'/data/presence/json/presence_',       'csv':'/data/presence/csv/presence_', 'platform': 'prezenta.bec.ro'},
+'parlamentare2016':{        'id':'2016-parl',    'json':'/json/presence_',            'csv':'/csv/presence_',      'platform': 'prezenta.bec.ro'}
+} 
+
+
+ 
 import os, requests, logging
 # import argparse
 import pandas as pd
@@ -30,9 +65,7 @@ scrutin = df.loc[df['id'] == alegeri]
 
 data_scrutin = scrutin['ddmmyyyy'].iloc[0]
 data_scrutin_ymd = scrutin['yymmdd'].iloc[0]
- 
-
-
+baseurl = scrutin['url'].iloc[0]
 tip_alegeri = scrutin['Tip'].iloc[0]
 
 def setup_logging(destination_dir):
@@ -66,18 +99,15 @@ ore_str = scrutin['ore'].iloc[0]
 
 timerange_start, timerange_end = extract_timerange(ore_str)
 
-judete = ['ab','ag','ar','b','bc','bh','bn','br','bt','bv','bz','cj','cl','cs','ct','cv','db','dj','gj','gl','gr','hd','hr','if','il','is','mh','mm','ms','nt','ot','ph','sb','sj','sm','sv','tl','tm','tr','vl','vn','vs','sr'] # 'sr' for strainatate
-# tari=["za","dz","ao","ar","am","au","at","az","be","ba","br","bg","ca","cu","dk","eg","ch","ae","ee","et","ru","ph","fi","fr","ge","de","gr","in","iq","ie","is","il","it","jp","ke","kw","lv","lt","lu","mk","my","mt","ma","mx","me","ng","no","nz","nl","ps","pe","pl","pt","mc","qa","co","kz","sa","jo","gb","al","by","cz","cl","cy","kr","hr","id","ir","pk","lb","md","cn","sk","vn","sn","rs","sg","sy","si","es","lk","us","se","om","tz","th","tn","tr","tm","ua","hu","uy","uz","zw"]
-# judete = [] # only download csvs 
-
-xdata_root = data_root + str(data_scrutin) + '-' + tip_alegeri + '/prezenta/'
+xdata_root = data_root + str(data_scrutin) + '-' + alegeri + '/prezenta/'
 
 destination_dir = xdata_root 
-
 
 os.makedirs(destination_dir, exist_ok=True)
 os.makedirs(destination_dir + 'jsons/', exist_ok=True)
 os.makedirs(destination_dir + 'csvs/', exist_ok=True)
+
+setup_logging(destination_dir)
 
 # ymd_date = datetime.strptime(data_scrutin, '%d%m%Y').strftime('%Y-%m-%d')
 
@@ -113,29 +143,29 @@ def download_file(url, destination):
     except requests.exceptions.RequestException as e:
         logging.error(f"FAILED: Failed to download {url}. Error: {e}")
         return 0  # Failed
-
-""" def download_json(url, filepath): #obsolete?!
-    if not os.path.exists(filepath):
-        response = requests.get(url)
-        if response.status_code == 200:
-            with open(filepath, 'w', encoding='utf-8') as f:
-                f.write(response.text)
-            tqdm.write(f"Fișierul {filename} a fost descărcat și salvat.")
-            return 1
-        else:
-            tqdm.write(f"Nu s-a putut descărca fișierul de la URL-ul {url}. Status code: {response.status_code}")
-            # response.status_code
-            return 0
-    else:
-        tqdm.write(f"Fișierul {filename} deja există în directorul de destinație.")
-        return 2 """
+ 
 
 total = len(judete) * len(timerange) + len(timerange)
+logging.info(f"found {len(judete)} judete, {len(timerange)} timeslots")
 
-for judet in tqdm(judete, total=total):
+tqdm.write('----- JUDEȚE -----');
+
+# extract domain from baseurl
+platform1 = baseurl.split('/')[2] #domain
+platform2 = baseurl.split('/')[3] #slug-alegeri
+
+
+
+for judet in tqdm(judete, total=len(judete)):
     tqdm.write(f"---- JUDEȚ: {judet} ----")
     for ora in timerange:
-        url = f"https://prezenta.roaep.ro/{tip_alegeri}{ymd_date_folder}/data/json/simpv/presence/presence_{judet}_{ymd_date}_{ora}-00.json"
+        # url = f"https://prezenta.roaep.ro/{tip_alegeri}{ymd_date_folder}/data/json/simpv/presence/presence_{judet}_{ymd_date}_{ora}-00.json"
+        # url = f"{baseurl}/data/json/simpv/presence/presence_{judet}_{ymd_date}_{ora}-00.json"
+        if platform1 == 'prezenta.bec.ro':
+            # capitalize judet for BEC
+            judet = judet.upper()
+        # url = f"{baseurl}{domain_pattern[platform]['json']}{judet}_{ymd_date}_{ora}-00.json"
+        url = f"{baseurl}{scrutin_pattern[platform2]['json']}{judet}_{ymd_date}_{ora}-00.json"
         filename = f"prezenta_{judet}_{ymd_date}_{ora}-00.json"
         filepath = os.path.join(destination_dir + 'jsons/', filename)
         try:
@@ -152,10 +182,12 @@ for judet in tqdm(judete, total=total):
             # continue
             exit(1)
 
-tqdm.write('------------');            
+tqdm.write('----- CSVS -----');            
         
 for ora in timerange:
-    url_cntry = f"https://prezenta.roaep.ro/{tip_alegeri}{ymd_date_folder}/data/csv/simpv/presence_{ymd_date}_{ora}-00.csv"
+    # url_cntry = f"{baseurl}/data/csv/simpv/presence_{ymd_date}_{ora}-00.csv"
+    # url_cntry = f"{baseurl}{domain_pattern[platform]['csv']}{ymd_date}_{ora}-00.csv"
+    url_cntry = f"{baseurl}{scrutin_pattern[platform2]['csv']}{ymd_date}_{ora}-00.csv"
     
     filename_cntry = f"prezenta_{ymd_date}_{ora}-00.csv"
     filepath_cntry = os.path.join(destination_dir + 'csvs/', filename_cntry)

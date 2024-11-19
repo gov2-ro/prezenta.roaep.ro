@@ -1,21 +1,21 @@
-id,nr,url,slug,an,Nume,Obs1,Tip,Tip2,Data,ddmmyyyy,yymmdd,ore,start,end
-2024-local-3,21,https://prezenta.roaep.ro/locale07072024,locale07072024,2024,"Locale 07-07-2024, Tur 3",Reluate | UAT: Costinești | Primar,locale,PARȚIALE,07-07-2024,7072024,240707,07:00 - 22:00, 07:00, 22:00
-2024-local-2,20,https://prezenta.roaep.ro/locale23062024,locale23062024,2024,"Locale 23-06-2024, Tur 2",Balotaj | 8 Secții | Primar,locale,PARȚIALE,23-06-2024,23062024,240623,07:00 - 22:00, 07:00, 22:00
-2024-euparl,19,https://prezenta.roaep.ro/europarlamentare09062024,europarlamentare09062024,2024,Europarlamentare 09-06-2024,,europarlamentare,,09-06-2024,9062024,240609,22:00 - 10:00, 22:00, 10:00
-2024-local,18,https://prezenta.roaep.ro/locale09062024,locale09062024,2024,Locale 09-06-2024,,locale,,09-06-2024,9062024,240609,07:00 - 22:00, 07:00, 22:00
-2024-refloc,17,https://prezenta.roaep.ro/referendum26052024,referendum26052024,2024,Referendum local 24-05-2024,UAT: Ucea | Stație biogaz,referendum local,PARȚIALE,26-05-2024,26052024,240526,07:00 - 23:00, 07:00, 23:00
-2022-refloc,16,https://prezenta.roaep.ro/referendum19062022,referendum19062022,2022,Referendum local 19-06-2022,UAT: Dumbrăvița | Demitere primar,referendum local,PARȚIALE,19-06-2022,19062022,220619,07:00 - 23:00, 07:00, 23:00
-2021-refloc-4,15,https://prezenta.roaep.ro/referendum26092021_3,referendum26092021_3,2021,Referendum local 26-09-2021 - 3,UAT: Codlea | Edificare arteră ocolitoare,referendum local,PARȚIALE,26-09-2021,26092021,210926,07:00 - 23:00, 07:00, 23:00
-2021-refloc-3,14,https://prezenta.roaep.ro/referendum26092021_2,referendum26092021_2,2021,Referendum local 26-09-2021 - 2,UAT: Ţintești | Unire UAT Țintești - Buzău,referendum local,PARȚIALE,26-09-2021,26092021,210926,07:00 - 23:00, 07:00, 23:00
-2021-refloc-2,13,https://prezenta.roaep.ro/referendum26092021_1,referendum26092021_1,2021,Referendum local 26-09-2021 - 1,UAT: Buzău | Unire UAT Țintești - Buzău,referendum local,PARȚIALE,26-09-2021,26092021,210926,07:00 - 23:00, 07:00, 23:00
-2021-refloc-1,12,https://prezenta.roaep.ro/referendum15082021,referendum15082021,2021,Referendum local 15-08-2021,UAT: Păulești | Înființare sat Fundătura,referendum local,PARȚIALE,15-08-2021,15082021,210815,07:00 - 23:00, 07:00, 23:00
-2021-local-2,11,https://prezenta.roaep.ro/locale27062021,locale27062021,2021,Locale 27-06-2021,23 de județe | Primar,locale,PARȚIALE,27-06-2021,27062021,210627,07:00 - 21:00, 07:00, 21:00
-2021-local-1,10,https://prezenta.roaep.ro/locale24012021,locale24012021,2021,Locale 24-01-2021,Județ: Caraș-Severin | UAT: Moldova Nouă | Primar,locale,PARȚIALE,24-01-2021,24012021,210124,07:00 - 21:00, 07:00, 21:00
-2020-parl,9,https://prezenta.roaep.ro/parlamentare06122020,parlamentare06122020,2020,Parlamentare 06-12-2020,,parlamentare,,06-12-2020,6122020,201206,07:00 - 21:00, 07:00, 21:00
-2019-prez-1,8,https://prezenta.bec.ro/prezidentiale24112019,prezidentiale24112019,2019,"Prezidentiale: Tur 2, 24-11-2019",,prezidentiale,,24-11-2019,24112019,191124,07:00 - 21:00, 07:00, 21:00
-2019-prez-1,7,https://prezenta.bec.ro/prezidentiale10112019,prezidentiale10112019,2019,"Prezidentiale: Tur 1, 10-11-2019",,prezidentiale,,10-11-2019,10112019,191110,07:00 - 21:00, 07:00, 21:00
-2020-local-2,6,https://prezenta.roaep.ro/locale11102020,locale11102020,2020,Locale 11-10-2020 - Tur 2,Balotaj | 9 Secții | 3 Județe | Primar,locale,PARȚIALE,11-10-2020,11102020,201011,07:00 - 21:00, 07:00, 21:00
-2020-local,5,https://prezenta.roaep.ro/locale27092020,locale27092020,2020,Locale 27-09-2020 - Tur 1,,locale,,27-09-2020,27092020,200927,07:00 - 07:00, 07:00, 07:00
-2019-ref,4,https://prezenta.bec.ro/referendum26052019,referendum26052019,2019,Referendum 26-05-2019,,referendum,,26-05-2019,26052019,190526,07:00 - 21:00, 07:00, 21:00
-2019-euparl,3,https://prezenta.bec.ro/europarlamentare26052019,europarlamentare26052019,2019,Europarlamentare 26-05-2019,,europarlamentare,,26-05-2019,26052019,190526,07:00 - 21:00, 07:00, 21:00
-2016-parl,2,https://prezenta.bec.ro/parlamentare2016,parlamentare2016,2016,Parlamentare 11-12-2016,,parlamentare,Fără SICPV,11-12-2016,11122016,161211,07:00 - 21:00, 07:00, 21:00
+id,nr,url,slug,an,Nume,Obs1,Tip,Tip2,Data,ddmmyyyy,yymmdd,ore,start,end,app-version
+2024-local-3,21,https://prezenta.roaep.ro/locale07072024,locale07072024,2024,"Locale 07-07-2024, Tur 3",Reluate | UAT: Costinești | Primar,locale,PARȚIALE,07-07-2024,7072024,240707,07:00 - 22:00, 07:00, 22:00,aep.ro
+2024-local-2,20,https://prezenta.roaep.ro/locale23062024,locale23062024,2024,"Locale 23-06-2024, Tur 2",Balotaj | 8 Secții | Primar,locale,PARȚIALE,23-06-2024,23062024,240623,07:00 - 22:00, 07:00, 22:00,aep.ro
+2024-euparl,19,https://prezenta.roaep.ro/europarlamentare09062024,europarlamentare09062024,2024,Europarlamentare 09-06-2024,,europarlamentare,,09-06-2024,9062024,240609,22:00 - 10:00, 22:00, 10:00,aep.ro
+2024-local,18,https://prezenta.roaep.ro/locale09062024,locale09062024,2024,Locale 09-06-2024,,locale,,09-06-2024,9062024,240609,07:00 - 22:00, 07:00, 22:00,aep.ro
+2024-refloc,17,https://prezenta.roaep.ro/referendum26052024,referendum26052024,2024,Referendum local 24-05-2024,UAT: Ucea | Stație biogaz,referendum local,PARȚIALE,26-05-2024,26052024,240526,07:00 - 23:00, 07:00, 23:00,aep.ro
+2022-refloc,16,https://prezenta.roaep.ro/referendum19062022,referendum19062022,2022,Referendum local 19-06-2022,UAT: Dumbrăvița | Demitere primar,referendum local,PARȚIALE,19-06-2022,19062022,220619,07:00 - 23:00, 07:00, 23:00,aep.ro
+2021-refloc-4,15,https://prezenta.roaep.ro/referendum26092021_3,referendum26092021_3,2021,Referendum local 26-09-2021 - 3,UAT: Codlea | Edificare arteră ocolitoare,referendum local,PARȚIALE,26-09-2021,26092021,210926,07:00 - 23:00, 07:00, 23:00,aep.ro
+2021-refloc-3,14,https://prezenta.roaep.ro/referendum26092021_2,referendum26092021_2,2021,Referendum local 26-09-2021 - 2,UAT: Ţintești | Unire UAT Țintești - Buzău,referendum local,PARȚIALE,26-09-2021,26092021,210926,07:00 - 23:00, 07:00, 23:00,aep.ro
+2021-refloc-2,13,https://prezenta.roaep.ro/referendum26092021_1,referendum26092021_1,2021,Referendum local 26-09-2021 - 1,UAT: Buzău | Unire UAT Țintești - Buzău,referendum local,PARȚIALE,26-09-2021,26092021,210926,07:00 - 23:00, 07:00, 23:00,aep.ro
+2021-refloc-1,12,https://prezenta.roaep.ro/referendum15082021,referendum15082021,2021,Referendum local 15-08-2021,UAT: Păulești | Înființare sat Fundătura,referendum local,PARȚIALE,15-08-2021,15082021,210815,07:00 - 23:00, 07:00, 23:00,aep.ro
+2021-local-2,11,https://prezenta.roaep.ro/locale27062021,locale27062021,2021,Locale 27-06-2021,23 de județe | Primar,locale,PARȚIALE,27-06-2021,27062021,210627,07:00 - 21:00, 07:00, 21:00,aep.ro
+2021-local-1,10,https://prezenta.roaep.ro/locale24012021,locale24012021,2021,Locale 24-01-2021,Județ: Caraș-Severin | UAT: Moldova Nouă | Primar,locale,PARȚIALE,24-01-2021,24012021,210124,07:00 - 21:00, 07:00, 21:00,aep.ro
+2020-parl,9,https://prezenta.roaep.ro/parlamentare06122020,parlamentare06122020,2020,Parlamentare 06-12-2020,,parlamentare,,06-12-2020,6122020,201206,07:00 - 21:00, 07:00, 21:00,aep.ro
+2019-prez-2,8,https://prezenta.bec.ro/prezidentiale24112019,prezidentiale24112019,2019,"Prezidentiale: Tur 2, 24-11-2019",,prezidentiale,,24-11-2019,24112019,191124,07:00 - 21:00, 07:00, 21:00,bec.ro
+2019-prez-1,7,https://prezenta.bec.ro/prezidentiale10112019,prezidentiale10112019,2019,"Prezidentiale: Tur 1, 10-11-2019",,prezidentiale,,10-11-2019,10112019,191110,07:00 - 21:00, 07:00, 21:00,bec.ro
+2020-local-2,6,https://prezenta.roaep.ro/locale11102020,locale11102020,2020,Locale 11-10-2020 - Tur 2,Balotaj | 9 Secții | 3 Județe | Primar,locale,PARȚIALE,11-10-2020,11102020,201011,07:00 - 21:00, 07:00, 21:00,aep.ro
+2020-local,5,https://prezenta.roaep.ro/locale27092020,locale27092020,2020,Locale 27-09-2020 - Tur 1,,locale,,27-09-2020,27092020,200927,07:00 - 07:00, 07:00, 07:00,aep.ro
+2019-ref,4,https://prezenta.bec.ro/referendum26052019,referendum26052019,2019,Referendum 26-05-2019,,referendum,,26-05-2019,26052019,190526,07:00 - 21:00, 07:00, 21:00,bec.ro
+2019-euparl,3,https://prezenta.bec.ro/europarlamentare26052019,europarlamentare26052019,2019,Europarlamentare 26-05-2019,,europarlamentare,,26-05-2019,26052019,190526,07:00 - 21:00, 07:00, 21:00,bec.ro
+2016-parl,2,https://prezenta.bec.ro/parlamentare2016,parlamentare2016,2016,Parlamentare 11-12-2016,,parlamentare,Fără SICPV,11-12-2016,11122016,161211,07:00 - 21:00, 07:00, 21:00,bec.ro
