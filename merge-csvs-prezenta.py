@@ -3,7 +3,7 @@ import glob
 import os
 
 data_root = 'data/'
-alegeri = '11122016-2016-parl'
+alegeri = '6122020-2020-parl'
 
 def merge_csv_files(data_folder, output_file):
     """
