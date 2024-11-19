@@ -10,7 +10,7 @@ Downloadează (și agregă) date despre rezultate și prezență la vot publicat
 ### Prezență vot
 - `dl-prezenta.py`
 - `merge-jsons-prezenta.py`
-- `merge-csvs-prezenta.py` #TODO: 
+- `merge-csvs-prezenta.py`  
 
 ### Rezultate (procese verbale)
 - `dl-pvs.py`
