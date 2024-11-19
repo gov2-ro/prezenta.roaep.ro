@@ -100,6 +100,7 @@ ore_str = scrutin['ore'].iloc[0]
 timerange_start, timerange_end = extract_timerange(ore_str)
 
 xdata_root = data_root + str(data_scrutin) + '-' + alegeri + '/prezenta/'
+# xdata_root = data_root + str(data_scrutin) + '-' + alegeri + '/'
 
 destination_dir = xdata_root 
 

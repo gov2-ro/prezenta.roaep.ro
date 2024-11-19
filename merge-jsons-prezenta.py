@@ -1,13 +1,12 @@
 # TODO: WIP
 
-tip_alegeri='locale'
-data_scrutin='09062024'      # euro + locale
-data_root = "data/" + data_scrutin + '-' + tip_alegeri + '/prezenta/'
+ 
+data_root = "data/"
+scrutin_slug = '11122016-2016-parl'
+json_dir = data_root + scrutin_slug + '/prezenta/jsons/' 
 
-json_dir = data_root + 'jsons/' 
-
-output_xlsx = data_root + 'consolidated.xlsx'
-output_csv = data_root + 'consolidated.csv'
+output_xlsx = data_root + scrutin_slug + 'prezenta/' + scrutin_slug + '--consolidated-json.xlsx'
+output_csv = data_root + scrutin_slug + 'prezenta/' + scrutin_slug + '--consolidated-json.csv'
 
 
 # TODO: script args
@@ -82,3 +81,5 @@ final_df.drop(columns=ignore_columns, inplace=True)
 final_df.to_excel(output_xlsx, index=False)
 # Display the DataFrame (optional)
 # print(final_df.head())
+
+
