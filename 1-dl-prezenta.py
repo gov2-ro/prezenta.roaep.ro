@@ -10,7 +10,7 @@
 
 alegeri = '2024-prez-1.1'
 
-data_root = "data/"
+data_root = "data/alegeri/"
 index_alegeti = 'data/static/prezenta-alegeri-roaep.csv'
 overwrite = False
 
