@@ -8,14 +8,14 @@
 
 """
 
-alegeri = '2020-parl'
+alegeri = '2024-prez-1.1'
 
 data_root = "data/"
 index_alegeti = 'data/static/prezenta-alegeri-roaep.csv'
 overwrite = False
 
 judete = ['ab','ag','ar','b','bc','bh','bn','br','bt','bv','bz','cj','cl','cs','ct','cv','db','dj','gj','gl','gr','hd','hr','if','il','is','mh','mm','ms','nt','ot','ph','sb','sj','sm','sv','tl','tm','tr','vl','vn','vs','sr'] # 'sr' for strainatate
-# judete = [] # only download csvs 
+judete = [] # only download csvs 
 
 
 """ 
@@ -26,7 +26,9 @@ domain_pattern = {
 'prezenta.roaep.ro':  {'json': '/data/json/simpv/presence/presence_','csv': '/data/csv/simpv/presence_'},
 'prezenta.bec.ro': {'json': '/data/presence/json/presence_','csv': '/data/presence/csv/presence_'}}
 
+
 scrutin_pattern = {
+'prezidentiale24112024':{          'id':'2024-prez-1.1', 'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
 'locale07072024':{          'id':'2024-local-3', 'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
 'locale23062024':{          'id':'2024-local-2', 'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
 'europarlamentare09062024':{'id':'2024-euparl',  'json':'/data/json/simpv/presence/presence_', 'csv':'/data/csv/simpv/presence_',    'platform': 'prezenta.aep.ro'},
