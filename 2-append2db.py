@@ -58,27 +58,27 @@ mask = csvdata['Judet'] == 'SR'
 tara_to_alpha2 = dict(zip(tari['tara'], tari['alpha2']))
 mapped_alpha2 = csvdata.loc[mask, 'UAT'].map(tara_to_alpha2)
 csvdata.loc[mask, 'Judet'] = mapped_alpha2.fillna(csvdata.loc[mask, 'UAT'])
-# replace Siruta with alpha2?
-# siruta_mapped_alpha2 = csvdata.loc[mask, 'UAT'].map(tara_to_alpha2)
-# csvdata.loc[mask, 'Siruta'] = siruta_mapped_alpha2.combine_first(csvdata.loc[mask, 'Siruta'])
+ 
+
+# - - - - - - - - - - - - - - - - - - - - -  
 
 
-columns_to_remove = ['Nr sectie de votare']
-if 'Siruta' in csvdata.columns:
-    columns_to_remove.append('Siruta')
 
-data_to_aggregate = csvdata.drop(columns=columns_to_remove)
-# print(data_to_aggregate.head())
+desired_columns = ['Votanti pe lista permanenta','Votanti pe lista complementara','Votanti pe lista complementara','Înscriși pe liste permanente','Înscriși pe liste complementare','LP','LS','LSC','UM','LT','LC','Barbati 18-24','Barbati 25-34','Barbati 35-44','Barbati 45-64','Barbati 65+','Femei 18-24','Femei 25-34','Femei 35-44','Femei 45-64','Femei 65+']
 
-# Step 5: Identify numerical columns for aggregation
-numerical_cols = data_to_aggregate.select_dtypes(include=['int64', 'float64']).columns.tolist()
-# TODO: add manually columns to aggregate
+# Intersect the desired columns with the existing columns in the dataframe
+existing_columns = list(set(desired_columns) & set(csvdata.columns))
 
-aggregated_df = data_to_aggregate.groupby('Judet')[numerical_cols].sum().reset_index()
-# print(aggregated_df.head())
+# Create a pivot table using only the existing columns
+pivot_data = csvdata.pivot_table(
+    index=['timestamp', 'alegeri', 'Judet'], 
+    values=existing_columns,  # Only include the columns that exist
+    aggfunc='sum',  # Aggregation function: sum
+    fill_value=0  # Fill missing values with 0
+).reset_index()  # Reset index for a clean DataFrame
 
-# siruta_df.to_csv('siruta_data.csv', index=False, encoding='utf-8')
-aggregated_df.to_csv('aggregated_judet_data.csv', index=False, encoding='utf-8')
+
+pivot_data.to_csv('aggregated_judet_data2.csv', index=False, encoding='utf-8')
 csvdata.to_csv('csvdata.csv', index=False, encoding='utf-8')
 
 
