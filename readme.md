@@ -6,6 +6,10 @@ vezi [prezenta.roaep.ro.md](docs/prezenta.roaep.ro.md) și [Descrierea fișierel
 - PVs: [primărie](https://docs.google.com/spreadsheets/d/1SJQjSnJlN1IeoQ38sXAIBM2LBtrj5Wo_/edit?usp=drive_link&ouid=110866595781073302984), [CL](https://docs.google.com/spreadsheets/d/1SJwARd3E-GEqKiwMhnlfMQP3ayxH11dQ/edit?usp=drive_link&ouid=110866595781073302984) 
 - **Agregat**: [verificare-locale PVs + prezenta](https://docs.google.com/spreadsheets/d/1S4K92YJPrIUTOYLAEWafUJvKp04XojPg/edit?gid=1765616260)
 
+
+## Workflow Nov 2024
+- 1-dl-csvs.py - downloads csvs if don't exist, adds to db?
+
 ## Scripts
 
 ### Prezență vot

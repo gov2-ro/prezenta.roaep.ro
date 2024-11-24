@@ -1,8 +1,8 @@
-Descrierea fișierelor de tip .csv (comma separated values) cu toate informațiile din procesele verbale publicate conform deciziei BEC nr. 161D/17.11.2024:
+Descrierea fișierelor de tip .csv (comma separated values) cu toate informațiile din procesele verbale publicate conform [deciziei BEC nr. 161D/17.11.2024](https://prezidentiale2024.bec.ro/wp-content/uploads/2024/11/Decizie_161D_P.pdf): 
 1.  Fisierul .csv cu rezultatele actualizate(**ultima versiune**) din procesele verbale întocmite de birourile secțiilor de votare conform anexelor 1A,1B și 1C. Fisierul va respecta urmatorii parametri:
     1.  Denumire: pv_part_cntry_prsd
     2.  Actualizare la 10 minute( se va inlocui fisierul vechi cu altul cu aceeasi denumire)
-    3.  Vor include doar ultima versiune a procesului verbal si starea în care se afla acesta[^1^](#sdfootnote1sym)
+    3.  Vor include doar ultima versiune a procesului verbal si starea în care se afla acesta [^1]
     4.  Informatia va fi desfasurată pe următoarele coloane:
         -   precinct_county_nce
         -   precinct_county_name
@@ -59,7 +59,7 @@ Descrierea fișierelor de tip .csv (comma separated values) cu toate informații
 1.  Fisierul .csv cu rezultatele actualizate(**ultima versiune**) din procesele verbale întocmite de birourile secțiilor de votare **pentru votul prin corespondență** conform anexei 1D. Fisierul va respecta urmatorii parametri:
     1.  Denumire: pv_part_cntry_prsd_c
     2.  Actualizare la 10 minute( se va inlocui fisierul vechi cu altul cu aceeasi denumire)
-    3.  Vor include doar ultima versiune a procesului verbal si starea în care se afla acesta[^2^](#sdfootnote2sym)
+    3.  Vor include doar ultima versiune a procesului verbal si starea în care se afla acesta [^1]
     4.  Informatia va fi desfasurată pe următoarele coloane:
         -   precinct_county_nce
         -   precinct_county_name
@@ -115,5 +115,5 @@ Descrierea fișierelor de tip .csv (comma separated values) cu toate informații
         -   CANDIDAT 1-voturi
         -   ....
         -   CANDIDAT n -voturi (n la turul 1=14, turul 2 n=2)
-[1](#sdfootnote1anc) PROV- datele din PV sunt provizorii(au fost transmise din secții dar nu a fost verificat de biroul electoral superior, PART=datele sunt verificate și validate de biroul electoral superior , FINAL=datele au fost incluse in PV-ul centralizator al biroului electoral superior.
-[2](#sdfootnote2anc) PROV- datele din PV sunt provizorii(au fost transmise din secții dar nu a fost verificat de biroul electoral superior, PART=datele sunt verificate și validate de biroul electoral superior , FINAL=datele au fost incluse in PV-ul centralizator al biroului electoral superior.
+
+[^1]: PROV- datele din PV sunt provizorii(au fost transmise din secții dar nu a fost verificat de biroul electoral superior, PART=datele sunt verificate și validate de biroul electoral superior , FINAL=datele au fost incluse in PV-ul centralizator al biroului electoral superior.
