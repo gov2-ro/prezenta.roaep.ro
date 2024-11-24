@@ -20,7 +20,6 @@ def create_table_if_not_exists(db_path, table_name):
       Judet TEXT,
       timestamp TEXT,
       Votantilista INTEGER,
-      Mediu TEXT,
       Votantipelistapermanenta INTEGER,
       Votantipelistacomplementara INTEGER,
       inscrisi_L_permanente INTEGER,
@@ -43,66 +42,71 @@ def create_table_if_not_exists(db_path, table_name):
     );
     '''
 
-    cursor.execute(create_table_sql)
-    conn.commit()
-    conn.close()
+    try:
+        cursor.execute(create_table_sql)
+        conn.commit()
+        # print(f"Table '{table_name}' is ready.")
+    except Exception as e:
+        print(f"Error creating table '{table_name}': {e}")
+    finally:
+        cursor.close()
+        conn.close()
 
 def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographics, table_name, COLUMN_MAPPING):
-    filename = os.path.basename(csv_file)
+    import pandas as pd
+    import sqlite3
+    import logging
+
+    # Read the CSV file
     csvdata = pd.read_csv(csv_file)
 
-    # Expected filename format: prezenta_<yyyy>-<mm>-<dd>_<hh>-00.csv
-    filename_clean = filename.replace('prezenta_', '')
+    # Intersect the desired columns with the existing columns in the dataframe
+    desired_columns = [
+        'diaspora', 'Votanti pe lista permanenta', 'Votanti pe lista complementara', 'Votanti pe lista speciala',
+        'Înscriși pe liste permanente', 'Înscriși pe liste complementare', 'LP', 'LS', 'LSC', 'UM', 'LT', 'LC',
+        'Barbati 18-24', 'Barbati 25-34', 'Barbati 35-44', 'Barbati 45-64', 'Barbati 65+',
+        'Femei 18-24', 'Femei 25-34', 'Femei 35-44', 'Femei 45-64', 'Femei 65+'
+    ]
+    existing_columns = list(set(desired_columns) & set(csvdata.columns))
+    
+    filename = os.path.basename(csv_file)
+    filename = filename.replace('prezenta_', '')
     pattern = re.compile(r'^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])_([01]\d|2[0-3])-00\.csv$')
-    parts = filename_clean.split('_')
-
-    if not pattern.match(filename_clean):
-        logging.info(f"Filename {filename} does not match the expected pattern. Skipping.")
-        return
+    parts = filename.split('_')
 
     csvdata = csvdata.drop(columns=columns_to_remove_demographics, errors='ignore')
 
     date_part = parts[0]  # <yyyy>-<mm>-<dd>
     time_part = parts[1].split('-')[0]  # <hh>
     timestamp = f"{date_part} {time_part}:00"
-
     csvdata['timestamp'] = timestamp
     csvdata['alegeri'] = alegeri
-    tari = pd.read_csv(index_tari)
-    # check judet
+    # if 'Judet' in csvdata.columns:
+    #     csvdata['diaspora'] = csvdata['Judet'].apply(lambda x: 1 if x == 'SR' else 0)
+    
     if 'Judet' in csvdata.columns:
         csvdata['diaspora'] = csvdata['Judet'].apply(lambda x: 1 if x == 'SR' else 0)
-
-    # replace tari for judet = SR / diaspora = 1
-    mask = csvdata['Judet'] == 'SR'
-    tara_to_alpha2 = dict(zip(tari['tara'], tari['alpha2']))
-    mapped_alpha2 = csvdata.loc[mask, 'UAT'].map(tara_to_alpha2)
-    csvdata.loc[mask, 'Judet'] = mapped_alpha2.fillna(csvdata.loc[mask, 'UAT'])
+    # else:
+    #     csvdata['diaspora'] = 0  # Default value if Judet column doesn't exist
     
+    # Get existing columns for pivot
+    existing_columns = list(set(desired_columns) & set(csvdata.columns))
 
-     
-    # - - - - - - - - - - - - - - - - - - - - -  
+# Create pivot table without diaspora in index
+    index_columns = ['alegeri', 'timestamp', 'Judet']
 
-    desired_columns = ['diaspora','Votanti pe lista permanenta','Votanti pe lista complementara','Votanti pe lista speciala',
-                       'Înscriși pe liste permanente','Înscriși pe liste complementare','LP','LS','LSC','UM','LT','LC',
-                       'Barbati 18-24','Barbati 25-34','Barbati 35-44','Barbati 45-64','Barbati 65+',
-                       'Femei 18-24','Femei 25-34','Femei 35-44','Femei 45-64','Femei 65+']
-
-    # Intersect the desired columns with the existing columns in the dataframe
-    existing_columns = list(set(desired_columns) & set(csvdata.columns))  
-
-    # Create a pivot table using only the existing columns
     pivot_data = csvdata.pivot_table(
-        index=['timestamp', 'alegeri', 'Judet'], 
-        values=existing_columns,  # Only include the columns that exist
-        aggfunc='sum',  # Aggregation function: sum
-        fill_value=0  # Fill missing values with 0
-    ).reset_index()  # Reset index for a clean DataFrame
-    
-    create_table_if_not_exists(db_path=db, table_name=table_name)
+        index=index_columns,
+        values=existing_columns,
+        aggfunc='sum',
+        fill_value=0
+    ).reset_index()
 
-    # - - - - - - - - - - - - - - - - - - - - -  
-    # Check if data exists before appending
+    # Add diaspora column after pivot
+    pivot_data['diaspora'] = pivot_data['Judet'].apply(lambda x: 1 if x == 'SR' else 0)
+
+    # Create the table if it doesn't exist
+    create_table_if_not_exists(db_path=db, table_name=table_name)
 
     # Connect to SQLite database
     conn = sqlite3.connect(db)
@@ -127,7 +131,7 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     if existing_judets_set:
         pivot_data = pivot_data[~pivot_data['Judet'].isin(existing_judets_set)]
 
-    # Corrected logic: Check if pivot_data is empty
+    # Check if pivot_data is empty
     if pivot_data.empty:
         logging.info(f"Data for {timestamp} already exists in the database for the given 'alegeri' and 'Judet'. Skipping.")
     else:
@@ -135,6 +139,7 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
 
 def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence=True):
     import sqlite3
+    import logging
 
     # Apply column mapping
     dataframe.rename(columns=COLUMN_MAPPING, inplace=True)
@@ -179,7 +184,7 @@ def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence
                     logging.info(f"Record already exists for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'. Skipping.")
                     continue
             except Exception as e:
-                logging.info(f"Error during existence check: {e}")
+                logging.error(f"Error during existence check: {e}")
                 conn.close()
                 return
 
@@ -194,13 +199,15 @@ def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence
             cursor.execute(sql, values)
             logging.info(f"Inserted row {index} into the database.")
         except Exception as e:
-            logging.info(f"Error inserting row {index}: {e}")
+            logging.error(f"Error inserting row {index}: {e}")
             conn.close()
             return
 
     conn.commit()
+    cursor.close()
     conn.close()
     logging.info("Data appended to the database successfully.")
+
 create_table_if_not_exists(db_path=db, table_name=table_name)
 
 if __name__ == "__main__":
