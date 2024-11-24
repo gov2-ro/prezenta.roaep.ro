@@ -1,8 +1,9 @@
+""" 
 tip_alegeri='locale'
 functie_alesi='p'
 uat_type='judet'
 
-# pv_type='part'
+
 pv_type='final'
 data_scrutin='09062024'      # euro + locale
 
@@ -16,10 +17,13 @@ uatx={
 
 xlsx_file = data_root + 'merged-' + functie_alesi + '-' + uatx[uat_type] + '-' + pv_type + '.xlsx'
 sqlite_db = data_root + 'merged-' + functie_alesi + '-' + uatx[uat_type] + '-' + pv_type + '.db'
-
+ """
 
 import pandas as pd
-import sqlite3
+import sqlite3, sys
+
+xlsx_file = sys.argv[1]
+sqlite_db = sys.argv[2]
 
 def xlsx_to_sqlite(xlsx_file, sqlite_db):
     # Load the Excel file
