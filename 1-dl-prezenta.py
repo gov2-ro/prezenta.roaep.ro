@@ -5,10 +5,10 @@
 - also add tara diaspora
 """
 
-alegeri = '2024-prez-1.1'
+alegeri = '2019-prez-1'
 
 data_root = "data/"
-db = data_root + "alegeri/_merged/prezenta-alegeri-judete.db"
+# db = data_root + "alegeri/_merged/prezenta-alegeri-judete.db"
 index_alegeti = data_root + 'static/prezenta-alegeri-roaep.csv'
 dlog = data_root + "download-log.csv"
 
@@ -108,6 +108,7 @@ try:
 except requests.exceptions.RequestException as e:
     print('failed getting hours' )
     print(e)
+    breakpoint()
     exit(1)
     logging.error(f"Failed to fetch hours_json: {e}")
 
