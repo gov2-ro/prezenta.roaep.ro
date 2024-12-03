@@ -1,4 +1,5 @@
-DOWNLOAD_DIR = "data/csvs-presa/PREZ-20241124"
+runda = 'PARL-20241201'
+DOWNLOAD_DIR = "data/csvs-presa/" + runda
 
 """ 
 https://prezenta.roaep.ro/presa/prezenta
@@ -17,7 +18,8 @@ load_dotenv()
 
 
 # URL = "https://prezenta.roaep.ro/presa/pv/EUP-20240609/"
-URL = "http://prezenta.roaep.ro/presa/prezenta/PREZ-20241124/"
+# URL = "http://prezenta.roaep.ro/presa/prezenta/PREZ-20241124/"
+URL = "http://prezenta.roaep.ro/presa/prezenta/" + runda + "/"
 USERNAME = os.getenv("roaep_press_USERNAME")
 PASSWORD = os.getenv("roaep_press_PASSWORD")
 
@@ -39,6 +41,7 @@ session.adapters["https://"] = requests.adapters.HTTPAdapter(max_retries=3)
 def file_exists(filename):
     return os.path.exists(os.path.join(DOWNLOAD_DIR, filename))
 
+print(f"Processing {URL}...")
 # Get the page content
 try:
     response = session.get(URL, timeout=10)
@@ -48,6 +51,8 @@ except requests.exceptions.RequestException as e:
     exit()
 
 soup = BeautifulSoup(response.content, "html.parser")
+
+print(f"--- ")
 
 # Find all links ending with .csv
 for link in soup.find_all("a"):

@@ -5,10 +5,11 @@
 - also add tara diaspora
 """
 
-alegeri = '2019-prez-1'
+alegeri = '2024-prez-1'
+# alegeri = '2024-parl'
 
 data_root = "data/"
-# db = data_root + "alegeri/_merged/prezenta-alegeri-judete.db"
+db = data_root + "alegeri/_merged/prezenta-alegeri-judete.db"
 index_alegeti = data_root + 'static/prezenta-alegeri-roaep.csv'
 dlog = data_root + "download-log.csv"
 
@@ -82,7 +83,7 @@ def download_file(url, destination, overwrite = False, logfile = ''):
         with open(logfile, 'a') as f:
             # f.write(f"{datetime.now()},{url}\n")
             f.write(f"{datetime.now()},{url},{response_status},{round(int(response.headers['Content-Length'])/1000)}, {round(filesize/1048576),1}\n")
-            print('written to log ' + logfile)
+            # print('written to log ' + logfile)
         return 1  # Success
     except requests.exceptions.RequestException as e:
         logging.error(f"FAILED: Failed to download {url}. Error: {e}")
@@ -108,7 +109,7 @@ try:
 except requests.exceptions.RequestException as e:
     print('failed getting hours' )
     print(e)
-    breakpoint()
+    breakpoint
     exit(1)
     logging.error(f"Failed to fetch hours_json: {e}")
 
@@ -117,7 +118,7 @@ os.makedirs(data_root + alegeri, exist_ok=True)
 for node in hours_json:
     # check if file exists
     csvurl = baseurl + app_pattern[app_version]['csv'] + node['key'] + '.csv'
-    zifile = data_root + alegeri + '/' + node['key'] + '.csv'
+    zifile = data_root + 'alegeri/' + alegeri + '/' + node['key'] + '.csv'
     # get the zifile from the url
     filename = csvurl.split('/')[-1]
     if filename == 'now.csv':

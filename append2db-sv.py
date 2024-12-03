@@ -2,7 +2,7 @@
 data_root = "data/"
 db = data_root + "_merged/prezenta-alegeri-all.db"
 index_tari = data_root + 'static/countries.csv'
-table_name = 'prezenta-alegeri'
+table_name = 'prezenta_sv'
 
 
 import pandas as pd
@@ -15,10 +15,13 @@ def create_table_if_not_exists(db_path, table_name):
 
     create_table_sql = f'''
     CREATE TABLE IF NOT EXISTS "{table_name}" (
-      alegeri TEXT,
+      timestamp TEXT,
+      alegeri TEXT,      
       diaspora INTEGER,
       Judet TEXT,
-      timestamp TEXT,
+      Mediu TEXT,
+      Siruta INTEGER,
+      Nrsectiedevotare INTEGER,      
       Votantilista INTEGER,
       Votantipelistapermanenta INTEGER,
       Votantipelistacomplementara INTEGER,
@@ -43,12 +46,13 @@ def create_table_if_not_exists(db_path, table_name):
     '''
 
     try:
+        print(f"Table '{table_name}' is ready.")
         cursor.execute(create_table_sql)
-        conn.commit()
-        # print(f"Table '{table_name}' is ready.")
     except Exception as e:
-        print(f"Error creating table '{table_name}': {e}")
+        print(f"E53 Error creating table '{table_name}': {e}")
     finally:
+        
+        conn.commit()
         cursor.close()
         conn.close()
 
@@ -61,7 +65,7 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     csvdata = pd.read_csv(csv_file)
 
     # Intersect the desired columns with the existing columns in the dataframe
-    desired_columns = [
+    desired_columns = ['Siruta','Nrsectiedevotare',
         'diaspora', 'Votanti pe lista permanenta', 'Votanti pe lista complementara', 'Votanti pe lista speciala',
         'Înscriși pe liste permanente', 'Înscriși pe liste complementare', 'LP', 'LS', 'LSC', 'UM', 'LT', 'LC',
         'Barbati 18-24', 'Barbati 25-34', 'Barbati 35-44', 'Barbati 45-64', 'Barbati 65+',
