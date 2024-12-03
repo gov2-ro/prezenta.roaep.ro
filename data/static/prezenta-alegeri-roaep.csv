@@ -1,4 +1,5 @@
 id,nr,url,slug,an,Nume,Obs1,Tip,Tip2,Data,ddmmyyyy,yymmdd,ore,start,end,app-version
+2024-parl,23,https://prezenta.roaep.ro/parlamentare01122024/,parlamentare01122024/,,,,,,01-12-2024,1122024,,,,,aep
 2024-prez-1,22,https://prezenta.roaep.ro/prezidentiale24112024/,prezidentiale24112024,2024,Prezidentiale: Tur 1 22-11-2024,"străinătate, ziua 1",prezidentiale,,22-11-2024,22112024,241122,01:00 - 23:00, 01:00, 12:00,aep
 2024-local-3,21,https://prezenta.roaep.ro/locale07072024,locale07072024,2024,"Locale 07-07-2024, Tur 3",Reluate | UAT: Costinești | Primar,locale,PARȚIALE,07-07-2024,7072024,240707,07:00 - 22:00, 07:00, 22:00,aep
 2024-local-2,20,https://prezenta.roaep.ro/locale23062024,locale23062024,2024,"Locale 23-06-2024, Tur 2",Balotaj | 8 Secții | Primar,locale,PARȚIALE,23-06-2024,23062024,240623,07:00 - 22:00, 07:00, 22:00,aep
