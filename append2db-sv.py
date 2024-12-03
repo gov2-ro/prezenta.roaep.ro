@@ -4,10 +4,16 @@ db = data_root + "_merged/prezenta-alegeri-all.db"
 index_tari = data_root + 'static/countries.csv'
 table_name = 'prezenta_sv'
 
+""" 
+# TODOs
+- [ ] unpivot data
+- [ ] drop tables with LT = 0
+- [ ] debugging level
+
+"""
 
 import pandas as pd
-import glob, os, re, logging, sqlite3, argparse
-
+import glob, os, re, logging, sqlite3, argparse, logging
 def create_table_if_not_exists(db_path, table_name):
     import sqlite3
     conn = sqlite3.connect(db_path)
@@ -19,8 +25,9 @@ def create_table_if_not_exists(db_path, table_name):
       alegeri TEXT,      
       diaspora INTEGER,
       Judet TEXT,
-      Mediu TEXT,
+   
       Siruta INTEGER,
+      Mediu TEXT,
       Nrsectiedevotare INTEGER,      
       Votantilista INTEGER,
       Votantipelistapermanenta INTEGER,
@@ -46,7 +53,7 @@ def create_table_if_not_exists(db_path, table_name):
     '''
 
     try:
-        print(f"Table '{table_name}' is ready.")
+        # print(f"Table '{table_name}' is ready.")
         cursor.execute(create_table_sql)
     except Exception as e:
         print(f"E53 Error creating table '{table_name}': {e}")
@@ -65,7 +72,8 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     csvdata = pd.read_csv(csv_file)
 
     # Intersect the desired columns with the existing columns in the dataframe
-    desired_columns = ['Siruta','Nrsectiedevotare',
+    desired_columns = ['Siruta','Nr sectie de votare', 'Mediu','Judet','alegeri','Judet', 'timestamp',
+                    #    'UAT','Localitate',
         'diaspora', 'Votanti pe lista permanenta', 'Votanti pe lista complementara', 'Votanti pe lista speciala',
         'Înscriși pe liste permanente', 'Înscriși pe liste complementare', 'LP', 'LS', 'LSC', 'UM', 'LT', 'LC',
         'Barbati 18-24', 'Barbati 25-34', 'Barbati 35-44', 'Barbati 45-64', 'Barbati 65+',
@@ -75,7 +83,7 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     
     filename = os.path.basename(csv_file)
     filename = filename.replace('prezenta_', '')
-    pattern = re.compile(r'^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])_([01]\d|2[0-3])-00\.csv$')
+    # pattern = re.compile(r'^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])_([01]\d|2[0-3])-00\.csv$')
     parts = filename.split('_')
 
     csvdata = csvdata.drop(columns=columns_to_remove_demographics, errors='ignore')
@@ -85,65 +93,86 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     timestamp = f"{date_part} {time_part}:00"
     csvdata['timestamp'] = timestamp
     csvdata['alegeri'] = alegeri
+    tari = pd.read_csv(index_tari)
     # if 'Judet' in csvdata.columns:
     #     csvdata['diaspora'] = csvdata['Judet'].apply(lambda x: 1 if x == 'SR' else 0)
     
     if 'Judet' in csvdata.columns:
         csvdata['diaspora'] = csvdata['Judet'].apply(lambda x: 1 if x == 'SR' else 0)
-    # else:
-    #     csvdata['diaspora'] = 0  # Default value if Judet column doesn't exist
+    else:
+        csvdata['diaspora'] = 0  # Default value if Judet column doesn't exist
     
     # Get existing columns for pivot
+    mask = csvdata['Judet'] == 'SR'
+    tara_to_alpha2 = dict(zip(tari['tara'], tari['alpha2']))
+    mapped_alpha2 = csvdata.loc[mask, 'UAT'].map(tara_to_alpha2)
+    csvdata.loc[mask, 'Judet'] = mapped_alpha2.fillna(csvdata.loc[mask, 'UAT'])
     existing_columns = list(set(desired_columns) & set(csvdata.columns))
-
-# Create pivot table without diaspora in index
-    index_columns = ['alegeri', 'timestamp', 'Judet']
-
-    pivot_data = csvdata.pivot_table(
-        index=index_columns,
-        values=existing_columns,
-        aggfunc='sum',
-        fill_value=0
-    ).reset_index()
-
-    # Add diaspora column after pivot
-    pivot_data['diaspora'] = pivot_data['Judet'].apply(lambda x: 1 if x == 'SR' else 0)
-
-    # Create the table if it doesn't exist
+    
+    # remove rows from csvdata where LT = 0
+    csvdata = csvdata[csvdata['LT'] != 0]
+    
+    # keep only the columns that are in the desired_columns list
+    csvdata = csvdata[existing_columns]
+    
+    # breakpoint()
     create_table_if_not_exists(db_path=db, table_name=table_name)
-
-    # Connect to SQLite database
-    conn = sqlite3.connect(db)
-    cursor = conn.cursor()
-
-    # Check if table exists
-    cursor.execute('SELECT name FROM sqlite_master WHERE type="table" AND name=?;', (table_name,))
-    table_exists = cursor.fetchone() is not None
-
-    if table_exists:
-        # Get existing 'Judet's for current 'alegeri' and 'timestamp'
-        existing_judets_query = f'SELECT Judet FROM "{table_name}" WHERE alegeri = ? AND timestamp = ?'
-        existing_judets_df = pd.read_sql_query(existing_judets_query, conn, params=(alegeri, timestamp))
-        existing_judets_set = set(existing_judets_df['Judet'].tolist())
-    else:
-        existing_judets_set = set()
-
-    cursor.close()
-    conn.close()
-
-    # Filter pivot_data to exclude existing 'Judet's
-    if existing_judets_set:
-        pivot_data = pivot_data[~pivot_data['Judet'].isin(existing_judets_set)]
-
-    # Check if pivot_data is empty
-    if pivot_data.empty:
+    
+    if csvdata.empty:
         logging.info(f"Data for {timestamp} already exists in the database for the given 'alegeri' and 'Judet'. Skipping.")
     else:
-        append_to_db(db, table_name, pivot_data, COLUMN_MAPPING)
+        append_to_db(db, table_name, csvdata, COLUMN_MAPPING)
+        
+    
+    # TODO: check if data already exists in the database for the given 'alegeri', 'Judet', 'timestamp' and 'diaspora' 
+
+# Create pivot table without diaspora in index
+    # index_columns = ['alegeri', 'timestamp', 'Judet']
+
+    # pivot_data = csvdata.pivot_table(
+    #     index=index_columns,
+    #     values=existing_columns,
+    #     aggfunc='sum',
+    #     fill_value=0
+    # ).reset_index()
+
+    # # Add diaspora column after pivot
+    # pivot_data['diaspora'] = pivot_data['Judet'].apply(lambda x: 1 if x == 'SR' else 0)
+
+    # # Create the table if it doesn't exist
+    # create_table_if_not_exists(db_path=db, table_name=table_name)
+
+    # # Connect to SQLite database
+    # conn = sqlite3.connect(db)
+    # cursor = conn.cursor()
+
+    # # Check if table exists
+    # cursor.execute('SELECT name FROM sqlite_master WHERE type="table" AND name=?;', (table_name,))
+    # table_exists = cursor.fetchone() is not None
+
+    # if table_exists:
+    #     # Get existing 'Judet's for current 'alegeri' and 'timestamp'
+    #     existing_judets_query = f'SELECT Judet FROM "{table_name}" WHERE alegeri = ? AND timestamp = ?'
+    #     existing_judets_df = pd.read_sql_query(existing_judets_query, conn, params=(alegeri, timestamp))
+    #     existing_judets_set = set(existing_judets_df['Judet'].tolist())
+    # else:
+    #     existing_judets_set = set()
+
+    # cursor.close()
+    # conn.close()
+
+    # # Filter pivot_data to exclude existing 'Judet's
+    # if existing_judets_set:
+    #     pivot_data = pivot_data[~pivot_data['Judet'].isin(existing_judets_set)]
+
+    # Check if pivot_data is empty
+    # if pivot_data.empty:
+    #     logging.info(f"Data for {timestamp} already exists in the database for the given 'alegeri' and 'Judet'. Skipping.")
+    # else:
+    #     append_to_db(db, table_name, pivot_data, COLUMN_MAPPING)
 
 def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence=True):
-    import sqlite3
-    import logging
+
 
     # Apply column mapping
     dataframe.rename(columns=COLUMN_MAPPING, inplace=True)
@@ -172,7 +201,7 @@ def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence
         Judet = str(row.get('Judet', '')).strip()
         timestamp = str(row.get('timestamp', '')).strip()
 
-        logging.info(f"Checking existence for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'")
+        logging.info(f"173 Checking existence for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'")
 
         if check_existence:
             try:
@@ -182,7 +211,7 @@ def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence
                     LIMIT 1
                 ''', (alegeri, Judet, timestamp))
                 exists = cursor.fetchone()
-                logging.info(f"Exists: {exists}")
+                logging.info(f"183 Exists: {exists}")
 
                 if exists:
                     logging.info(f"Record already exists for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'. Skipping.")
@@ -226,7 +255,9 @@ if __name__ == "__main__":
     COLUMN_MAPPING = {
         'alegeri': 'alegeri',
         'Judet': 'Judet',
+        'Mediu': 'Mediu',
         'timestamp': 'timestamp',
+        'Nr sectie de votare': 'Nrsectiedevotare',
         'Votanti pe lista permanenta': 'Votantipelistapermanenta',
         'Votanti pe lista complementara': 'Votantipelistacomplementara',
         'Votanti pe lista speciala': 'Votantipelistaspeciala',
