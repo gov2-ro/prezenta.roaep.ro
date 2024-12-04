@@ -63,6 +63,26 @@ def create_table_if_not_exists(db_path, table_name):
         cursor.close()
         conn.close()
 
+def row_exists(conn, table_name, timestamp, judet, diaspora, nrsectiedevotare):
+    """
+    Check if a row exists with the given criteria
+    """
+    cursor = conn.cursor()
+    
+    check_sql = f'''
+    SELECT 1 FROM "{table_name}" 
+    WHERE timestamp = ? 
+    AND Judet = ?
+    AND diaspora = ?
+    AND Nrsectiedevotare = ?
+    LIMIT 1
+    '''
+    
+    cursor.execute(check_sql, (timestamp, judet, diaspora, nrsectiedevotare))
+    exists = cursor.fetchone() is not None
+    cursor.close()
+    return exists
+
 def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographics, table_name, COLUMN_MAPPING):
     import pandas as pd
     import sqlite3
@@ -170,7 +190,25 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     #     logging.info(f"Data for {timestamp} already exists in the database for the given 'alegeri' and 'Judet'. Skipping.")
     # else:
     #     append_to_db(db, table_name, pivot_data, COLUMN_MAPPING)
-
+def row_exists(conn, table_name, timestamp, judet, diaspora, nrsectiedevotare):
+    """
+    Check if a row exists with the given criteria
+    """
+    cursor = conn.cursor()
+    
+    check_sql = f'''
+    SELECT 1 FROM "{table_name}" 
+    WHERE timestamp = ? 
+    AND Judet = ?
+    AND diaspora = ?
+    AND Nrsectiedevotare = ?
+    LIMIT 1
+    '''
+    
+    cursor.execute(check_sql, (timestamp, judet, diaspora, nrsectiedevotare))
+    exists = cursor.fetchone() is not None
+    cursor.close()
+    return exists
 def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence=True):
 
 
@@ -191,29 +229,39 @@ def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence
         return
 
     # Check initial record count
-    cursor.execute(f'SELECT COUNT(*) FROM "{table_name}"')
-    initial_count = cursor.fetchone()[0]
-    logging.info(f"Initial record count in '{table_name}': {initial_count}")
+    # cursor.execute(f'SELECT COUNT(*) FROM "{table_name}"')
+    # initial_count = cursor.fetchone()[0]
+    # logging.info(f"Initial record count in '{table_name}': {initial_count}")
 
     # Iterate over DataFrame rows
     for index, row in dataframe.iterrows():
         alegeri = str(row.get('alegeri', '')).strip()
         Judet = str(row.get('Judet', '')).strip()
         timestamp = str(row.get('timestamp', '')).strip()
+        Nrsectiedevotare = str(row.get('Nrsectiedevotare', '')).strip()
+        diaspora = str(row.get('diaspora', '')).strip()
 
-        logging.info(f"173 Checking existence for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'")
-
+        # logging.info(f"173 Checking existence for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'")
+        # if row_exists(conn, table_name, 
+        #                     row['timestamp'], 
+        #                     row['Judet'],
+        #                     row['diaspora'], 
+        #                     row['Nrsectiedevotare']):
+        #             # logging.info(f"Record already exists for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'. Skipping.")
+        #             # print(f"Record already exists for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'. Skipping.")
+        #             continue
         if check_existence:
             try:
                 cursor.execute(f'''
                     SELECT 1 FROM "{table_name}"
-                    WHERE alegeri = ? AND Judet = ? AND timestamp = ?
+                    WHERE alegeri = ? AND Judet = ? AND timestamp = ? AND diaspora = ? AND Nrsectiedevotare = ?
                     LIMIT 1
-                ''', (alegeri, Judet, timestamp))
+                ''', (alegeri, Judet, timestamp, diaspora, Nrsectiedevotare))
                 exists = cursor.fetchone()
                 logging.info(f"183 Exists: {exists}")
 
                 if exists:
+                    
                     logging.info(f"Record already exists for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'. Skipping.")
                     continue
             except Exception as e:
