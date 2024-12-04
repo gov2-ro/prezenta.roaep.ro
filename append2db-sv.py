@@ -26,86 +26,162 @@ import pandas as pd
 from tqdm import tqdm
 
 
-def create_table_if_not_exists(db_path, table_name):
+def prepare_db(db_path, table_name):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-
-    create_table_sql = f'''
-    CREATE TABLE IF NOT EXISTS "{table_name}" (
-      timestamp TEXT,
-      alegeri TEXT,      
-      diaspora INTEGER,
-      Judet TEXT,
-      Localitate TEXT,
-      Siruta INTEGER,
-      Mediu TEXT,
-      Nrsectiedevotare INTEGER,      
-      inscrisi_L_permanente INTEGER,
-      inscrisi_L_complementare INTEGER,
-      LP INTEGER,
-      LS INTEGER,
-      LSC INTEGER,
-      UM INTEGER,
-      LT INTEGER,
-      M_1824 INTEGER,
-      M_2534 INTEGER,
-      M_3544 INTEGER,
-      M_4564 INTEGER,
-      "M_65+" INTEGER,
-      F_1824 INTEGER,
-      F_2534 INTEGER,
-      F_3544 INTEGER,
-      F_4564 INTEGER,
-      "F_65+" INTEGER
-    );
-    '''
-    
-    create_view_alegeri = f'''
-        CREATE VIEW IF NOT EXISTS alegeri as 
-        SELECT DISTINCT folder FROM processed_files
-    '''
-
-    create_view_judete = f'''
-        CREATE VIEW IF NOT EXISTS judete AS
-        SELECT DISTINCT diaspora, Judet from prezenta_sv
-    '''
-
-    create_view_localitati = f'''
-        CREATE VIEW IF NOT EXISTS localitati AS
-        SELECT DISTINCT diaspora, Judet, Localitate, Mediu, Siruta from prezenta_sv
-    '''
+   
+    sql_statements = {
+        'create_table_sql': f'''
+            CREATE TABLE IF NOT EXISTS "{table_name}" (
+            timestamp TEXT,
+            alegeri TEXT,      
+            diaspora INTEGER,
+            Judet TEXT,
+            Localitate TEXT,
+            Siruta INTEGER,
+            Mediu TEXT,
+            Nrsectiedevotare INTEGER,      
+            inscrisi_L_permanente INTEGER,
+            inscrisi_L_complementare INTEGER,
+            LP INTEGER,
+            LS INTEGER,
+            LSC INTEGER,
+            UM INTEGER,
+            LT INTEGER,
+            M_1824 INTEGER,
+            M_2534 INTEGER,
+            M_3544 INTEGER,
+            M_4564 INTEGER,
+            "M_65+" INTEGER,
+            F_1824 INTEGER,
+            F_2534 INTEGER,
+            F_3544 INTEGER,
+            F_4564 INTEGER,
+            "F_65+" INTEGER
+            );
+            ''',
+        'csv_history': f'''
+            CREATE TABLE IF NOT EXISTS "processed_files" (
+                filename TEXT,
+                folder TEXT,
+                processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (filename, folder)
+            )''',
+        'alegeri': f''' 
+            CREATE VIEW IF NOT EXISTS alegeri AS 
+                SELECT DISTINCT folder FROM processed_files''',
+        'judete': f''' 
+            CREATE VIEW IF NOT EXISTS judete AS
+            SELECT DISTINCT diaspora, Judet from "{table_name}"
+            ''',
+        'localitati': f'''
+            CREATE VIEW IF NOT EXISTS prezenta_uat AS
+            SELECT alegeri,
+            Judet,
+            Siruta,
+            timestamp,
+            Nrsectiedevotare,
+            Mediu,
+            inscrisi_L_permanente,
+            inscrisi_L_complementare,
+            SUM(LP) AS LP,
+            SUM(LS) AS LS,
+            SUM(LSC) AS LSC,
+            SUM(UM) AS UM,
+            SUM(LT) AS LT,
+            SUM([M_1824]) as "M_1824",
+            SUM([M_2534]) as "M_2534",
+            SUM([M_3544]) as "M_3544",
+            SUM([M_4564]) as "M_4564",
+            SUM([M_65+]) as "M_65+",
+            SUM([F_1824]) as "F_1824",
+            SUM([F_2534]) as "F_2534",
+            SUM([F_3544]) as "F_3544",
+            SUM([F_4564]) as "F_4564",
+            SUM([F_65+]) as "F_65+"
+            FROM "{table_name}"
+            GROUP BY timestamp,
+            alegeri,
+            Siruta
+            ORDER by Siruta,
+            Judet,
+            timestamp
+        ''',
+        'prezenta_judet': f'''
+            CREATE VIEW IF NOT EXISTS prezenta_judet AS
+            SELECT alegeri,
+            diaspora,
+            Judet,
+            timestamp,
+            SUM(inscrisi_L_permanente) AS inscrisi_L_permanente,
+            SUM(inscrisi_L_complementare) AS inscrisi_L_complementare,
+            SUM(LP) AS LP,
+            SUM(LS) AS LS,
+            SUM(LSC) AS LSC,
+            SUM(UM) AS UM,
+            SUM(LT) AS LT,
+            SUM([M_1824]) as "M_1824",
+            SUM([M_2534]) as "M_2534",
+            SUM([M_3544]) as "M_3544",
+            SUM([M_4564]) as "M_4564",
+            SUM([M_65+]) as "M_65+",
+            SUM([F_1824]) as "F_1824",
+            SUM([F_2534]) as "F_2534",
+            SUM([F_3544]) as "F_3544",
+            SUM([F_4564]) as "F_4564",
+            SUM([F_65+]) as "F_65+"
+            FROM "{table_name}"
+            GROUP BY alegeri,
+            timestamp,
+            diaspora,
+            Judet
+            ORDER by alegeri,
+            diaspora,
+            Judet,
+            timestamp
+        ''',
+        'prezenta_national': f'''
+            CREATE VIEW IF NOT EXISTS prezenta_national AS
+            SELECT alegeri,
+            diaspora,
+            timestamp,
+            SUM(inscrisi_L_permanente) AS inscrisi_L_permanente,
+            SUM(inscrisi_L_complementare) AS inscrisi_L_complementare,
+            SUM(LP) AS LP,
+            SUM(LS) AS LS,
+            SUM(LSC) AS LSC,
+            SUM(UM) AS UM,
+            SUM(LT) AS LT,
+            SUM([M_1824]) as "M_1824",
+            SUM([M_2534]) as "M_2534",
+            SUM([M_3544]) as "M_3544",
+            SUM([M_4564]) as "M_4564",
+            SUM([M_65+]) as "M_65+",
+            SUM([F_1824]) as "F_1824",
+            SUM([F_2534]) as "F_2534",
+            SUM([F_3544]) as "F_3544",
+            SUM([F_4564]) as "F_4564",
+            SUM([F_65+]) as "F_65+"
+            FROM "{table_name}"
+            GROUP BY alegeri,
+            timestamp,
+            diaspora
+            ORDER by alegeri,
+            diaspora,
+            timestamp
+        '''
+    }
     
     try:
-        # print(f"Table '{table_name}' is ready.")
-        cursor.execute(create_table_sql)
-        cursor.execute(create_view_alegeri)
-        cursor.execute(create_view_judete)
-        cursor.execute(create_view_localitati)
+        for sql in sql_statements.values():
+            cursor.execute(sql)
     except Exception as e:
-        print(f"E53 Error creating table '{table_name}': {e}")
+        print(f"E-179 Error creating table '{table_name}': {e}")
     finally:
-        
         conn.commit()
         cursor.close()
         conn.close()
-
-def create_tracking_table(db_path):
-    """Create table to track processed CSV files"""
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-
-    create_sql = '''
-    CREATE TABLE IF NOT EXISTS "processed_files" (
-        filename TEXT,
-        folder TEXT,
-        processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (filename, folder)
-    );
-    '''
-    
-    cursor.execute(create_sql)
-    conn.commit()
-    conn.close()
+ 
 
 def normalize_text(text):
     # Remove diacritics and convert to lowercase
@@ -148,8 +224,8 @@ def mark_file_processed(db_path, filename, folder, timestamp):
 
 def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographics, table_name, COLUMN_MAPPING):
     
-    create_table_if_not_exists(db_path=db, table_name=table_name)
-    create_tracking_table(db)
+    prepare_db(db_path=db, table_name=table_name)
+ 
     
     # Get filename and parent folder
     filename = os.path.basename(csv_file)
@@ -272,7 +348,7 @@ def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING):
     conn.close()
     logging.info("Data appended to the database successfully.")
 
-create_table_if_not_exists(db_path=db, table_name=table_name)
+prepare_db(db_path=db, table_name=table_name)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process and append CSV data to the database.')
