@@ -59,10 +59,28 @@ def create_table_if_not_exists(db_path, table_name):
       "F_65+" INTEGER
     );
     '''
+    
+    create_view_alegeri = f'''
+        CREATE VIEW IF NOT EXISTS alegeri as 
+        SELECT DISTINCT folder FROM processed_files
+    '''
 
+    create_view_judete = f'''
+        CREATE VIEW IF NOT EXISTS judete AS
+        SELECT DISTINCT diaspora, Judet from prezenta_sv
+    '''
+
+    create_view_localitati = f'''
+        CREATE VIEW IF NOT EXISTS localitati AS
+        SELECT DISTINCT diaspora, Judet, Localitate, Mediu, Siruta from prezenta_sv
+    '''
+    
     try:
         # print(f"Table '{table_name}' is ready.")
         cursor.execute(create_table_sql)
+        cursor.execute(create_view_alegeri)
+        cursor.execute(create_view_judete)
+        cursor.execute(create_view_localitati)
     except Exception as e:
         print(f"E53 Error creating table '{table_name}': {e}")
     finally:

@@ -1,9 +1,11 @@
+
+alegeri = ['2019-prez-1'] #single run - comment if running all
 data_root = "data/"
 db = data_root + "_merged/prezenta-alegeri-all.db"
 # index_tari = data_root + 'static/countries.csv'
 table_name = 'sectii_vot'
 table_prezenta = 'prezenta_sv'
-runda_alegeri = '2019-prez-1'
+ 
 
 
 """ 
@@ -33,15 +35,17 @@ c.execute(f"CREATE TABLE IF NOT EXISTS {table_name} (alegeri TEXT, judet TEXT, l
 
 
 # get unique alegergi from db table table_prezenta 
-c.execute(f"SELECT DISTINCT alegeri FROM {table_prezenta}")
-alegeri = c.fetchall()
-alegeri = [x[0] for x in alegeri]
+# if alegeri not alraedy set, go for all
+if not alegeri:
+    c.execute(f"SELECT DISTINCT alegeri FROM {table_prezenta}")
+    alegeri = c.fetchall()
+    alegeri = [x[0] for x in alegeri]
+
 
 # loop for folders
 # for runda_alegeri in alegeri:
 for runda_alegeri in tqdm(alegeri, desc="Processing Elections", unit="election"):
 
-    
     target_folder = data_root + 'alegeri/' + runda_alegeri
     pattern1 = os.path.join(target_folder, '*????-??-??_??-00.csv')
 

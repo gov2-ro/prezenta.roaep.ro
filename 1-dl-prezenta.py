@@ -1,18 +1,13 @@
 """ 
 - reads hours.json
-- checks if any new csvs, if yes, add to db
-- drops unwanted columns, adds timestamp and alegeri columns and adds to the db
-- also add tara diaspora
+
 """
 
-alegeri = '2024-prez-1'
-# alegeri = '2024-parl'
+alegeri = '2016-parl'
 
 data_root = "data/"
-db = data_root + "alegeri/_merged/prezenta-alegeri-judete.db"
 index_alegeti = data_root + 'static/prezenta-alegeri-roaep.csv'
 dlog = data_root + "download-log.csv"
-
 
 app_pattern = {
 'aep':  {'json': 'data/json/simpv/presence','csv': '/data/csv/simpv/presence_'},
