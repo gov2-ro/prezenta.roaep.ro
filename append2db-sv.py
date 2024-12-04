@@ -8,8 +8,10 @@ table_name = 'prezenta_sv'
 # TODOs
 - [x] unpivot data
 - [x] drop tables with LT = 0
-- [ ] column synonims
-- [ ] better/faster check if exists
+- [x] column synonims
+- [x] better/faster check if exists
+- [ ] add Localitate - remove closing number, if any
+- [ ] create reference tables - external script
 - [ ] debugging level
 
 Înscriși pe liste permanente = Votanti lista = Votanti pe lista permanenta
@@ -19,8 +21,8 @@ table_name = 'prezenta_sv'
 
 import pandas as pd
 import glob, os, re, logging, sqlite3, argparse, logging
+
 def create_table_if_not_exists(db_path, table_name):
-    import sqlite3
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
@@ -30,7 +32,7 @@ def create_table_if_not_exists(db_path, table_name):
       alegeri TEXT,      
       diaspora INTEGER,
       Judet TEXT,
-   
+      Localitate TEXT,
       Siruta INTEGER,
       Mediu TEXT,
       Nrsectiedevotare INTEGER,      
@@ -114,30 +116,7 @@ def mark_file_processed(db_path, filename, folder, timestamp):
     conn.commit()
     conn.close()
 
-def rxow_exists(conn, table_name, timestamp, judet, diaspora, nrsectiedevotare):
-    """
-    Check if a row exists with the given criteria
-    """
-    cursor = conn.cursor()
-    
-    check_sql = f'''
-    SELECT 1 FROM "{table_name}" 
-    WHERE timestamp = ? 
-    AND Judet = ?
-    AND diaspora = ?
-    AND Nrsectiedevotare = ?
-    LIMIT 1
-    '''
-    
-    cursor.execute(check_sql, (timestamp, judet, diaspora, nrsectiedevotare))
-    exists = cursor.fetchone() is not None
-    cursor.close()
-    return exists
-
 def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographics, table_name, COLUMN_MAPPING):
-    import pandas as pd
-    import sqlite3
-    import logging
     
     create_tracking_table(db)
     
@@ -154,8 +133,7 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     csvdata = pd.read_csv(csv_file)
 
     # Intersect the desired columns with the existing columns in the dataframe
-    desired_columns = ['Siruta','Nr sectie de votare', 'Mediu','Judet','alegeri','Judet', 'timestamp',
-                    #    'UAT','Localitate',
+    desired_columns = ['Siruta','Nr sectie de votare', 'Mediu','Judet','alegeri','Judet', 'timestamp', 'Localitate',
         'diaspora', 'Votanti pe lista permanenta', 'Votanti pe lista complementara', 'Votanti pe lista speciala',
         'Înscriși pe liste permanente', 'Înscriși pe liste complementare', 'LP', 'LS', 'LSC', 'UM', 'LT', 'LC',
         'Barbati 18-24', 'Barbati 25-34', 'Barbati 35-44', 'Barbati 45-64', 'Barbati 65+',
@@ -165,7 +143,6 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     
     filename = os.path.basename(csv_file)
     filename = filename.replace('prezenta_', '')
-    # pattern = re.compile(r'^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])_([01]\d|2[0-3])-00\.csv$')
     parts = filename.split('_')
 
     csvdata = csvdata.drop(columns=columns_to_remove_demographics, errors='ignore')
@@ -176,8 +153,9 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     csvdata['timestamp'] = timestamp
     csvdata['alegeri'] = alegeri
     tari = pd.read_csv(index_tari)
-    # if 'Judet' in csvdata.columns:
-    #     csvdata['diaspora'] = csvdata['Judet'].apply(lambda x: 1 if x == 'SR' else 0)
+    
+    # if Localitate ends with a number, remove it
+    csvdata['Localitate'] = csvdata['Localitate'].str.replace(r'\d+$', '', regex=True)
     
     if 'Judet' in csvdata.columns:
         csvdata['diaspora'] = csvdata['Judet'].apply(lambda x: 1 if x == 'SR' else 0)
@@ -209,7 +187,6 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     
     # TODO: check if data already exists in the database for the given 'alegeri', 'Judet', 'timestamp' and 'diaspora' 
 
-def rxow_exists(conn, table_name, timestamp, judet, diaspora, nrsectiedevotare):
     """
     Check if a row exists with the given criteria
     """
@@ -229,7 +206,7 @@ def rxow_exists(conn, table_name, timestamp, judet, diaspora, nrsectiedevotare):
     cursor.close()
     return exists
 
-def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence=False):
+def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING):
 
 
     # Apply column mapping
@@ -256,34 +233,6 @@ def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence
         timestamp = str(row.get('timestamp', '')).strip()
         Nrsectiedevotare = str(row.get('Nrsectiedevotare', '')).strip()
         diaspora = str(row.get('diaspora', '')).strip()
-
-        # logging.info(f"173 Checking existence for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'")
-        # if row_exists(conn, table_name, 
-        #                     row['timestamp'], 
-        #                     row['Judet'],
-        #                     row['diaspora'], 
-        #                     row['Nrsectiedevotare']):
-        #             # logging.info(f"Record already exists for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'. Skipping.")
-        #             # print(f"Record already exists for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'. Skipping.")
-        #             continue
-        # if check_existence:
-        #     try:
-        #         cursor.execute(f'''
-        #             SELECT 1 FROM "{table_name}"
-        #             WHERE alegeri = ? AND Judet = ? AND timestamp = ? AND diaspora = ? AND Nrsectiedevotare = ?
-        #             LIMIT 1
-        #         ''', (alegeri, Judet, timestamp, diaspora, Nrsectiedevotare))
-        #         exists = cursor.fetchone()
-        #         logging.info(f"183 Exists: {exists}")
-
-        #         if exists:
-                    
-        #             logging.info(f"Record already exists for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'. Skipping.")
-        #             continue
-        #     except Exception as e:
-        #         logging.error(f"Error during existence check: {e}")
-        #         conn.close()
-        #         return
 
         # Prepare columns and values
         columns = ', '.join([f'"{col}"' for col in dataframe.columns])
@@ -320,6 +269,7 @@ if __name__ == "__main__":
         'alegeri': 'alegeri',
         'Judet': 'Judet',
         'Mediu': 'Mediu',
+        'Localitate': 'Localitate',
         'timestamp': 'timestamp',
         'Nr sectie de votare': 'Nrsectiedevotare',
         'Votanti pe lista permanenta': 'inscrisi_L_permanente',
