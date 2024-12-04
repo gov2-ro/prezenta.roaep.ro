@@ -13,9 +13,9 @@ vezi [prezenta.roaep.ro.md](docs/prezenta.roaep.ro.md) și [Descrierea fișierel
 ## Scripts
 
 ### Prezență vot
-- `dl-prezenta.py`
-- `merge-jsons-prezenta.py`
-- `merge-csvs-prezenta.py`  
+- `1-dl-prezenta.py`
+- `2-update-db.py` 
+- `3-create-reference-tables.py`  
 
 ### Rezultate (procese verbale)
 - `dl-pvs.py`
@@ -25,14 +25,7 @@ vezi [prezenta.roaep.ro.md](docs/prezenta.roaep.ro.md) și [Descrierea fișierel
 ### SQLite
 - `xlsx2sqlite.py`
 
-----
 
-$ python **`dl-prezenta.py`**` --data 09062024 --alegeri locale --t_start 19 --t_end 22`
-
-- data: _ddmmyyyy_ (27092020, 11102020, 27062021, 09062024)
-- alegeri: _locale, europarlamentare_ 
-- t_start: int (8 - 22)  
-- t_end: int (8 - 22)
 
 ----
 
@@ -49,7 +42,7 @@ $ python **`dl-pvs.py`**` --data 09062024 --alegeri locale --pv-type final --uat
 ----
 
 ### Data / Output
-
+<!-- 
 - \<data_scrutin\>-\<tip_alegeri\>/
     - prezenta/
         - csvs/
@@ -63,7 +56,7 @@ $ python **`dl-pvs.py`**` --data 09062024 --alegeri locale --pv-type final --uat
     - judete.csv
     - uat-siruta.csv
 
----
+--- -->
 
 ## Roadmap
 
@@ -75,7 +68,7 @@ $ python **`dl-pvs.py`**` --data 09062024 --alegeri locale --pv-type final --uat
 - [x] add params
 - [ ] consolidate to sqlite db
     - [x] individuale
-    - [ ] master db?
+    - [x] master db
     - [ ] public Datasette?
 - [ ] analytics
 - [ ] UI / dashboards
