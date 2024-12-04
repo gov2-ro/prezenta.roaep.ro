@@ -1,4 +1,3 @@
- 
 data_root = "data/"
 db = data_root + "_merged/prezenta-alegeri-all.db"
 index_tari = data_root + 'static/countries.csv'
@@ -10,6 +9,9 @@ table_name = 'prezenta_sv'
 - [x] drop tables with LT = 0
 - [x] column synonims
 - [x] better/faster check if exists
+- [x] add Localitate
+- [ ] use only one create_table_if_not_exists - set-up db, all tables and views
+- [ ] use only one connection?
 - [ ] add Localitate - remove closing number, if any
 - [ ] create reference tables - external script
 - [ ] debugging level
@@ -19,8 +21,10 @@ table_name = 'prezenta_sv'
 
 """
 
+import glob, os, re, logging, sqlite3, argparse, logging, unicodedata
 import pandas as pd
-import glob, os, re, logging, sqlite3, argparse, logging
+from tqdm import tqdm
+
 
 def create_table_if_not_exists(db_path, table_name):
     conn = sqlite3.connect(db_path)
@@ -85,6 +89,14 @@ def create_tracking_table(db_path):
     conn.commit()
     conn.close()
 
+def normalize_text(text):
+    # Remove diacritics and convert to lowercase
+    normalized = ''.join(
+        c for c in unicodedata.normalize('NFD', text)
+        if unicodedata.category(c) != 'Mn'
+    )
+    return normalized.lower()
+
 def file_was_processed(db_path, filename, folder):
     """Check if CSV file was already processed"""
     conn = sqlite3.connect(db_path)
@@ -95,7 +107,7 @@ def file_was_processed(db_path, filename, folder):
     WHERE filename = ? AND folder = ?
     LIMIT 1
     '''
-    
+    filename = filename.replace('prezenta_', '')
     cursor.execute(check_sql, (filename, folder))
     exists = cursor.fetchone() is not None
     cursor.close()
@@ -118,6 +130,7 @@ def mark_file_processed(db_path, filename, folder, timestamp):
 
 def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographics, table_name, COLUMN_MAPPING):
     
+    create_table_if_not_exists(db_path=db, table_name=table_name)
     create_tracking_table(db)
     
     # Get filename and parent folder
@@ -126,7 +139,9 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     
     # Check if file was already processed
     if file_was_processed(db, filename, folder):
+        tqdm.write(f"File {filename} from folder {folder} was already processed. Skipping.")
         logging.info(f"File {filename} from folder {folder} was already processed. Skipping.")
+        
         return
     
     # Read the CSV file
@@ -165,6 +180,11 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     # Get existing columns for pivot
     mask = csvdata['Judet'] == 'SR'
     tara_to_alpha2 = dict(zip(tari['tara'], tari['alpha2']))
+    # tara_to_alpha2 = {
+    #    normalize_text(tara): alpha2
+    #     for tara, alpha2 in zip(tari['tara'], tari['alpha2'])
+    # }
+
     mapped_alpha2 = csvdata.loc[mask, 'UAT'].map(tara_to_alpha2)
     csvdata.loc[mask, 'Judet'] = mapped_alpha2.fillna(csvdata.loc[mask, 'UAT'])
     existing_columns = list(set(desired_columns) & set(csvdata.columns))
@@ -176,7 +196,7 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     csvdata = csvdata[existing_columns]
     
     # breakpoint()
-    create_table_if_not_exists(db_path=db, table_name=table_name)
+    
     
     if csvdata.empty:
         logging.info(f"Data for {timestamp} already exists in the database for the given 'alegeri' and 'Judet'. Skipping.")
@@ -185,26 +205,6 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
         mark_file_processed(db, filename, folder, timestamp)
         
     
-    # TODO: check if data already exists in the database for the given 'alegeri', 'Judet', 'timestamp' and 'diaspora' 
-
-    """
-    Check if a row exists with the given criteria
-    """
-    cursor = conn.cursor()
-    
-    check_sql = f'''
-    SELECT 1 FROM "{table_name}" 
-    WHERE timestamp = ? 
-    AND Judet = ?
-    AND diaspora = ?
-    AND Nrsectiedevotare = ?
-    LIMIT 1
-    '''
-    
-    cursor.execute(check_sql, (timestamp, judet, diaspora, nrsectiedevotare))
-    exists = cursor.fetchone() is not None
-    cursor.close()
-    return exists
 
 def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING):
 
