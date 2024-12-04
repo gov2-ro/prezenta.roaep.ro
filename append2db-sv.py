@@ -6,8 +6,10 @@ table_name = 'prezenta_sv'
 
 """ 
 # TODOs
-- [ ] unpivot data
-- [ ] drop tables with LT = 0
+- [x] unpivot data
+- [x] drop tables with LT = 0
+- [ ] column synonims
+- [ ] better/faster check if exists
 - [ ] debugging level
 
 """
@@ -63,7 +65,56 @@ def create_table_if_not_exists(db_path, table_name):
         cursor.close()
         conn.close()
 
-def row_exists(conn, table_name, timestamp, judet, diaspora, nrsectiedevotare):
+def create_tracking_table(db_path):
+    """Create table to track processed CSV files"""
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    create_sql = '''
+    CREATE TABLE IF NOT EXISTS "processed_files" (
+        filename TEXT,
+        folder TEXT,
+        processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (filename, folder)
+    );
+    '''
+    
+    cursor.execute(create_sql)
+    conn.commit()
+    conn.close()
+
+def file_was_processed(db_path, filename, folder):
+    """Check if CSV file was already processed"""
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    check_sql = '''
+    SELECT 1 FROM "processed_files"
+    WHERE filename = ? AND folder = ?
+    LIMIT 1
+    '''
+    
+    cursor.execute(check_sql, (filename, folder))
+    exists = cursor.fetchone() is not None
+    cursor.close()
+    conn.close()
+    return exists
+
+def mark_file_processed(db_path, filename, folder, timestamp):
+    """Mark CSV file as processed"""
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    insert_sql = '''
+    INSERT INTO "processed_files" (filename, folder)
+    VALUES (?, ?)
+    '''
+    
+    cursor.execute(insert_sql, (filename, folder))
+    conn.commit()
+    conn.close()
+
+def rxow_exists(conn, table_name, timestamp, judet, diaspora, nrsectiedevotare):
     """
     Check if a row exists with the given criteria
     """
@@ -87,7 +138,18 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
     import pandas as pd
     import sqlite3
     import logging
-
+    
+    create_tracking_table(db)
+    
+    # Get filename and parent folder
+    filename = os.path.basename(csv_file)
+    folder = os.path.basename(os.path.dirname(csv_file))
+    
+    # Check if file was already processed
+    if file_was_processed(db, filename, folder):
+        logging.info(f"File {filename} from folder {folder} was already processed. Skipping.")
+        return
+    
     # Read the CSV file
     csvdata = pd.read_csv(csv_file)
 
@@ -142,55 +204,12 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
         logging.info(f"Data for {timestamp} already exists in the database for the given 'alegeri' and 'Judet'. Skipping.")
     else:
         append_to_db(db, table_name, csvdata, COLUMN_MAPPING)
+        mark_file_processed(db, filename, folder, timestamp)
         
     
     # TODO: check if data already exists in the database for the given 'alegeri', 'Judet', 'timestamp' and 'diaspora' 
 
-# Create pivot table without diaspora in index
-    # index_columns = ['alegeri', 'timestamp', 'Judet']
-
-    # pivot_data = csvdata.pivot_table(
-    #     index=index_columns,
-    #     values=existing_columns,
-    #     aggfunc='sum',
-    #     fill_value=0
-    # ).reset_index()
-
-    # # Add diaspora column after pivot
-    # pivot_data['diaspora'] = pivot_data['Judet'].apply(lambda x: 1 if x == 'SR' else 0)
-
-    # # Create the table if it doesn't exist
-    # create_table_if_not_exists(db_path=db, table_name=table_name)
-
-    # # Connect to SQLite database
-    # conn = sqlite3.connect(db)
-    # cursor = conn.cursor()
-
-    # # Check if table exists
-    # cursor.execute('SELECT name FROM sqlite_master WHERE type="table" AND name=?;', (table_name,))
-    # table_exists = cursor.fetchone() is not None
-
-    # if table_exists:
-    #     # Get existing 'Judet's for current 'alegeri' and 'timestamp'
-    #     existing_judets_query = f'SELECT Judet FROM "{table_name}" WHERE alegeri = ? AND timestamp = ?'
-    #     existing_judets_df = pd.read_sql_query(existing_judets_query, conn, params=(alegeri, timestamp))
-    #     existing_judets_set = set(existing_judets_df['Judet'].tolist())
-    # else:
-    #     existing_judets_set = set()
-
-    # cursor.close()
-    # conn.close()
-
-    # # Filter pivot_data to exclude existing 'Judet's
-    # if existing_judets_set:
-    #     pivot_data = pivot_data[~pivot_data['Judet'].isin(existing_judets_set)]
-
-    # Check if pivot_data is empty
-    # if pivot_data.empty:
-    #     logging.info(f"Data for {timestamp} already exists in the database for the given 'alegeri' and 'Judet'. Skipping.")
-    # else:
-    #     append_to_db(db, table_name, pivot_data, COLUMN_MAPPING)
-def row_exists(conn, table_name, timestamp, judet, diaspora, nrsectiedevotare):
+def rxow_exists(conn, table_name, timestamp, judet, diaspora, nrsectiedevotare):
     """
     Check if a row exists with the given criteria
     """
@@ -209,7 +228,8 @@ def row_exists(conn, table_name, timestamp, judet, diaspora, nrsectiedevotare):
     exists = cursor.fetchone() is not None
     cursor.close()
     return exists
-def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence=True):
+
+def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence=False):
 
 
     # Apply column mapping
@@ -227,11 +247,7 @@ def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence
         logging.info(f"Table '{table_name}' does not exist in the database.")
         conn.close()
         return
-
-    # Check initial record count
-    # cursor.execute(f'SELECT COUNT(*) FROM "{table_name}"')
-    # initial_count = cursor.fetchone()[0]
-    # logging.info(f"Initial record count in '{table_name}': {initial_count}")
+ 
 
     # Iterate over DataFrame rows
     for index, row in dataframe.iterrows():
@@ -250,24 +266,24 @@ def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING, check_existence
         #             # logging.info(f"Record already exists for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'. Skipping.")
         #             # print(f"Record already exists for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'. Skipping.")
         #             continue
-        if check_existence:
-            try:
-                cursor.execute(f'''
-                    SELECT 1 FROM "{table_name}"
-                    WHERE alegeri = ? AND Judet = ? AND timestamp = ? AND diaspora = ? AND Nrsectiedevotare = ?
-                    LIMIT 1
-                ''', (alegeri, Judet, timestamp, diaspora, Nrsectiedevotare))
-                exists = cursor.fetchone()
-                logging.info(f"183 Exists: {exists}")
+        # if check_existence:
+        #     try:
+        #         cursor.execute(f'''
+        #             SELECT 1 FROM "{table_name}"
+        #             WHERE alegeri = ? AND Judet = ? AND timestamp = ? AND diaspora = ? AND Nrsectiedevotare = ?
+        #             LIMIT 1
+        #         ''', (alegeri, Judet, timestamp, diaspora, Nrsectiedevotare))
+        #         exists = cursor.fetchone()
+        #         logging.info(f"183 Exists: {exists}")
 
-                if exists:
+        #         if exists:
                     
-                    logging.info(f"Record already exists for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'. Skipping.")
-                    continue
-            except Exception as e:
-                logging.error(f"Error during existence check: {e}")
-                conn.close()
-                return
+        #             logging.info(f"Record already exists for alegeri='{alegeri}', Judet='{Judet}', timestamp='{timestamp}'. Skipping.")
+        #             continue
+        #     except Exception as e:
+        #         logging.error(f"Error during existence check: {e}")
+        #         conn.close()
+        #         return
 
         # Prepare columns and values
         columns = ', '.join([f'"{col}"' for col in dataframe.columns])
