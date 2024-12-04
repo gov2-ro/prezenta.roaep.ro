@@ -12,6 +12,9 @@ table_name = 'prezenta_sv'
 - [ ] better/faster check if exists
 - [ ] debugging level
 
+Înscriși pe liste permanente = Votanti lista = Votanti pe lista permanenta
+Înscriși pe liste complementare = Votanti pe lista complementara
+
 """
 
 import pandas as pd
@@ -31,9 +34,6 @@ def create_table_if_not_exists(db_path, table_name):
       Siruta INTEGER,
       Mediu TEXT,
       Nrsectiedevotare INTEGER,      
-      Votantilista INTEGER,
-      Votantipelistapermanenta INTEGER,
-      Votantipelistacomplementara INTEGER,
       inscrisi_L_permanente INTEGER,
       inscrisi_L_complementare INTEGER,
       LP INTEGER,
@@ -322,8 +322,8 @@ if __name__ == "__main__":
         'Mediu': 'Mediu',
         'timestamp': 'timestamp',
         'Nr sectie de votare': 'Nrsectiedevotare',
-        'Votanti pe lista permanenta': 'Votantipelistapermanenta',
-        'Votanti pe lista complementara': 'Votantipelistacomplementara',
+        'Votanti pe lista permanenta': 'inscrisi_L_permanente',
+        'Votanti pe lista complementara': 'inscrisi_L_complementare',
         'Votanti pe lista speciala': 'Votantipelistaspeciala',
         'Înscriși pe liste permanente': 'inscrisi_L_permanente',
         'Înscriși pe liste complementare': 'inscrisi_L_complementare',
