@@ -2,6 +2,7 @@ data_root = "data/"
 db = data_root + "_merged/prezenta-alegeri-all.db"
 index_tari = data_root + 'static/countries.csv'
 table_name = 'prezenta_sv'
+table_diff = 'prezenta_sv_diff'
 
 """ 
 # TODOs
@@ -59,6 +60,41 @@ def prepare_db(db_path, table_name):
             F_4564 INTEGER,
             "F_65+" INTEGER
             );
+            ''',
+        'sv_diffs': f'''
+            CREATE VIEW IF NOT EXISTS "{table_diff}" AS
+            SELECT
+            timestamp,
+            alegeri,
+            diaspora,
+            Judet,
+            Localitate,
+            Siruta,
+            Mediu,
+            Nrsectiedevotare,
+            inscrisi_L_permanente,
+            inscrisi_L_complementare,
+            LP - COALESCE(LAG(LP) OVER w, 0) AS LP,
+            LS - COALESCE(LAG(LS) OVER w, 0) AS LS,
+            LSC - COALESCE(LAG(LSC) OVER w, 0) AS LSC,
+            UM - COALESCE(LAG(UM) OVER w, 0) AS UM,
+            LT - COALESCE(LAG(LT) OVER w, 0) AS LT,
+            M_1824 - COALESCE(LAG(M_1824) OVER w, 0) AS M_1824,
+            M_2534 - COALESCE(LAG(M_2534) OVER w, 0) AS M_2534,
+            M_3544 - COALESCE(LAG(M_3544) OVER w, 0) AS M_3544,
+            M_4564 - COALESCE(LAG(M_4564) OVER w, 0) AS M_4564,
+            "M_65+" - COALESCE(LAG("M_65+") OVER w, 0) AS "M_65+",
+            F_1824 - COALESCE(LAG(F_1824) OVER w, 0) AS F_1824,
+            F_2534 - COALESCE(LAG(F_2534) OVER w, 0) AS F_2534,
+            F_3544 - COALESCE(LAG(F_3544) OVER w, 0) AS F_3544,
+            F_4564 - COALESCE(LAG(F_4564) OVER w, 0) AS F_4564,
+            "F_65+" - COALESCE(LAG("F_65+") OVER w, 0) AS "F_65+"
+            FROM  "{table_name}"
+            WINDOW w AS (
+                PARTITION BY alegeri, diaspora, Judet, Siruta, Nrsectiedevotare
+                ORDER BY timestamp
+            )
+            ORDER BY alegeri, diaspora, Judet, Siruta, Nrsectiedevotare, timestamp
             ''',
         'csv_history': f'''
             CREATE TABLE IF NOT EXISTS "processed_files" (
@@ -130,7 +166,7 @@ def prepare_db(db_path, table_name):
             SUM([F_3544]) as "F_3544",
             SUM([F_4564]) as "F_4564",
             SUM([F_65+]) as "F_65+"
-            FROM "{table_name}"
+            FROM "{table_diff}"
             GROUP BY alegeri,
             timestamp,
             diaspora,
@@ -162,7 +198,7 @@ def prepare_db(db_path, table_name):
             SUM([F_3544]) as "F_3544",
             SUM([F_4564]) as "F_4564",
             SUM([F_65+]) as "F_65+"
-            FROM "{table_name}"
+            FROM "{table_diff}"
             GROUP BY alegeri,
             timestamp,
             diaspora
