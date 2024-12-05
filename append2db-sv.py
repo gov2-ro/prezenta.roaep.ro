@@ -11,10 +11,11 @@ table_diff = 'prezenta_sv_diff'
 - [x] column synonims
 - [x] better/faster check if exists
 - [x] add Localitate
-- [ ] use only one create_table_if_not_exists - set-up db, all tables and views
+- [x] calculate increments / diffs
+- [x] use only one create_table_if_not_exists - set-up db, all tables and views
 - [ ] use only one connection?
-- [ ] add Localitate - remove closing number, if any
-- [ ] create reference tables - external script
+- [x] add Localitate - remove closing number, if any
+- [x] create reference tables - external script
 - [ ] debugging level
 
 Înscriși pe liste permanente = Votanti lista = Votanti pe lista permanenta
@@ -25,7 +26,6 @@ table_diff = 'prezenta_sv_diff'
 import glob, os, re, logging, sqlite3, argparse, logging, unicodedata
 import pandas as pd
 from tqdm import tqdm
-
 
 def prepare_db(db_path, table_name):
     conn = sqlite3.connect(db_path)
@@ -218,7 +218,6 @@ def prepare_db(db_path, table_name):
         cursor.close()
         conn.close()
  
-
 def normalize_text(text):
     # Remove diacritics and convert to lowercase
     normalized = ''.join(
@@ -332,9 +331,7 @@ def process_csv(csv_file, alegeri, db, index_tari, columns_to_remove_demographic
         logging.info(f"Data for {timestamp} already exists in the database for the given 'alegeri' and 'Judet'. Skipping.")
     else:
         append_to_db(db, table_name, csvdata, COLUMN_MAPPING)
-        mark_file_processed(db, filename, folder, timestamp)
-        
-    
+        mark_file_processed(db, filename, folder, timestamp)      
 
 def append_to_db(db_path, table_name, dataframe, COLUMN_MAPPING):
 
