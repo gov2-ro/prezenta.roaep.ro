@@ -180,6 +180,7 @@ def prepare_db(db_path, table_name):
             CREATE VIEW IF NOT EXISTS prezenta_national AS
             SELECT alegeri,
             diaspora,
+            Mediu,
             timestamp,
             SUM(inscrisi_L_permanente) AS inscrisi_L_permanente,
             SUM(inscrisi_L_complementare) AS inscrisi_L_complementare,
@@ -204,6 +205,7 @@ def prepare_db(db_path, table_name):
             diaspora
             ORDER by alegeri,
             diaspora,
+            Mediu,
             timestamp
         '''
     }
